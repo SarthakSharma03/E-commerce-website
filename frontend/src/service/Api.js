@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://e-commerce-website-szxx.onrender.com";
 const AUTH_URL = `${API_BASE_URL}/auth`;
 const PRODUCTS_URL = `${API_BASE_URL}/products`;
 const ADMIN_URL = `${API_BASE_URL}/admin/products`;

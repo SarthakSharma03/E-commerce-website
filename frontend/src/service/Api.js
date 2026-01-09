@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://e-commerce-website-szxx.onrender.com";
+const API_BASE_URL = "http://localhost:3000";
 const AUTH_URL = `${API_BASE_URL}/auth`;
 const PRODUCTS_URL = `${API_BASE_URL}/products`;
 const ADMIN_URL = `${API_BASE_URL}/admin/products`;
@@ -41,7 +41,6 @@ const handleResponse = async (response) => {
     const data = await response.json();
     return data;
   } catch {
-    
     return {};
   }
 };
@@ -64,7 +63,6 @@ const Api = {
     });
     return handleResponse(response);
   },
-
 
   logout: async () => {
     const response = await fetch(`${AUTH_URL}/logout`, {
@@ -118,15 +116,6 @@ const Api = {
     return handleResponse(response);
   },
 
-  // verifyOtp: async (email, otp) => {
-  //   const response = await fetch(`${API_BASE_URL}/otp/verify`, {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify({ email, otp }),
-  //   });
-  //   return handleResponse(response);
-  // },
-
   resetPasswordWithOtp: async (email, otp, newPassword) => {
     const response = await fetch(`${API_BASE_URL}/otp/reset-password`, {
       method: "POST",
@@ -135,7 +124,6 @@ const Api = {
     });
     return handleResponse(response);
   },
-
  
   createOrder: async (orderData) => {
     const response = await fetch(`${API_BASE_URL}/orders`, {
@@ -151,6 +139,23 @@ const Api = {
       method: "PUT",
       headers: authHeaders(),
       body: JSON.stringify(paymentResult),
+    });
+    return handleResponse(response);
+  },
+
+  initiatePayment: async (orderId) => {
+    const response = await fetch(`${API_BASE_URL}/orders/${orderId}/initiate`, {
+      method: "POST",
+      headers: authHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  verifyPayment: async (orderId) => {
+    const response = await fetch(`${API_BASE_URL}/orders/verify`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ orderId }),
     });
     return handleResponse(response);
   },
@@ -199,7 +204,7 @@ const Api = {
     });
     return handleResponse(response);
   },
-  
+
   updateProduct: async (id, productData) => {
     const isForm = typeof FormData !== "undefined" && productData instanceof FormData;
     const response = await fetch(`${ADMIN_URL}/${id}`, {
@@ -209,7 +214,7 @@ const Api = {
     });
     return handleResponse(response);
   },
-  
+
   deleteProduct: async (id) => {
     const response = await fetch(`${ADMIN_URL}/${id}`, {
       method: "DELETE",
@@ -217,32 +222,6 @@ const Api = {
     });
     return handleResponse(response);
   },
-
-
-  getWishlist: async () => {
-    const response = await fetch(`${API_BASE_URL}/wishlist`, {
-      method: "GET",
-      headers: authHeaders(),
-    });
-    return handleResponse(response);
-  },
-
-  addToWishlist: async (productId) => {
-    const response = await fetch(`${API_BASE_URL}/wishlist`, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ productId }),
-    });
-    return handleResponse(response);
-  },
-
-  removeFromWishlist: async (productId) => {
-    const response = await fetch(`${API_BASE_URL}/wishlist/${productId}`, {
-      method: "DELETE",
-      headers: authHeaders(),
-    });
-    return handleResponse(response);
-  }
 };
 
 export default Api;

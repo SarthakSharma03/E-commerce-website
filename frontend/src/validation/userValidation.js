@@ -1,5 +1,13 @@
 import { object, string, date } from "yup";
 
+export const passwordValidation = string()
+  .required('Password is required')
+  .min(8, 'Password must be at least 8 characters long') 
+  .matches(/[a-z]/, 'Password requires a lowercase letter ' ) 
+  .matches(/[A-Z]/, 'Password requires an uppercase letter ') 
+  .matches(/[0-9]/, 'Password requires a number')
+  .matches(/[^a-zA-Z0-9]/, 'Password requires a special character');
+
 export const userSchema = object({
   name: string()
     .required().min(3).max(20)
@@ -10,13 +18,7 @@ export const userSchema = object({
         return /^[a-zA-Z\s]+$/.test(value);
       }
     ),
-  password: string()
-    .required('Password is required')
-    .min(8, 'Password must be at least 8 characters long') 
-    .matches(/[a-z]/, 'Password requires a lowercase letter ' ) 
-    .matches(/[A-Z]/, 'Password requires an uppercase letter ') 
-    .matches(/[0-9]/, 'Password requires a number')
-    .matches(/[^a-zA-Z0-9]/, 'Password requires a special character'),
+  password: passwordValidation,
   email: string()
     .required()
     .email()

@@ -5,16 +5,17 @@ const adminInitialize = async () => {
   try {
     const adminEmail = 'admin@example.com';
     const adminExists = await User.findOne({ email: adminEmail });
+    console.log(adminExists,'admin Exists or not  ')
 
     if (!adminExists) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const hashedPassword = await bcrypt.hash('Strongpassword@123', 10);
       await User.create({
         name: 'Admin User',
         email: adminEmail,
         password: hashedPassword,
         role: 'admin'
       });
-      console.log('Default admin initialized: admin@example.com / admin123');
+      console.log('Default admin initialized: admin@example.com / Strongpassword@123');
     } else {
       console.log('Admin already exists.');
     }

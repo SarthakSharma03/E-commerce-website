@@ -6,6 +6,7 @@ import { object, string, ref } from "yup";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Api from "../../service/Api";
 import { toast } from "react-toastify";
+import { passwordValidation } from "../../validation/userValidation";
 
 const emailSchema = object().shape({
   email: string().email("Invalid email").required("Email is required"),
@@ -13,9 +14,7 @@ const emailSchema = object().shape({
 
 
 const passwordSchema = object().shape({
-  newPassword: string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+  newPassword: passwordValidation,
   confirmPassword: string()
     .oneOf([ref("newPassword"), null], "Passwords must match")
     .required("Confirm Password is required"),

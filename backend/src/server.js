@@ -18,7 +18,7 @@ envConfig()
 connectDB().then(async () => {
   await adminInitialize();
   app.listen(PORT,()=>{
-    console.log(`Server running @ PORT:${PORT}`);
+    console.log(`Server running on @ PORT:${PORT}`);
   })
 });
 

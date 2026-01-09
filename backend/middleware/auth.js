@@ -14,9 +14,9 @@ export default async (req, res) => {
  
     const secret = process.env.JWT_SECRET 
     const payload = jwt.verify(token, secret)
-    req.userId = payload.userId
+    const userId = payload.userId
     
-    const user = await User.findById(req.userId);
+    const user = await User.findById(userId);
     if (!user) {
         return jsonResponse(res, { message: 'User not found' }, 401)
     }

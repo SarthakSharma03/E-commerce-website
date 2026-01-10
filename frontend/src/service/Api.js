@@ -1,92 +1,70 @@
+import axios from 'axios';
+
 const API_BASE_URL = "http://localhost:3000";
-const AUTH_URL = `${API_BASE_URL}/auth`;
-const PRODUCTS_URL = `${API_BASE_URL}/products`;
-const ADMIN_URL = `${API_BASE_URL}/admin/products`;
 
-const getToken = () => {
-  try {
-    return localStorage.getItem('auth_token') || '';
-  } catch {
-    return '';
-  }
-};
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  // Axios automatically sets Content-Type to application/json for objects
+  // and multipart/form-data for FormData, so we don't need to set it globally.
+});
 
-const authHeaders = () => {
-  const token = getToken();
-  const headers = { "Content-Type": "application/json" };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  return headers;
-};
-
-const authHeadersNoJSON = () => {
-  const token = getToken();
-  const headers = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
-  return headers;
-};
-
-const handleResponse = async (response) => {
-  if (!response.ok) {
-    let errorMessage = "Something went wrong";
-    try {
-      const data = await response.json();
-      errorMessage = data.error || data.message || errorMessage;
-    } catch {
-      errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+// Request Interceptor to add Token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
-    throw new Error(errorMessage);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  
-  try {
-    const data = await response.json();
-    return data;
-  } catch {
-    return {};
+);
+
+// Response Interceptor to handle errors
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    let errorMessage = "Something went wrong";
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      const data = error.response.data;
+      errorMessage = data.error || data.message || errorMessage;
+    } else if (error.request) {
+      // The request was made but no response was received
+      errorMessage = "No response from server";
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      errorMessage = error.message;
+    }
+    return Promise.reject(new Error(errorMessage));
   }
-};
+);
 
 const Api = {
+  // Auth Endpoints
   login: async (email, password) => {
-    const response = await fetch(`${AUTH_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    return handleResponse(response);
+    return await axiosInstance.post('/auth/login', { email, password });
   },
 
   registerUser: async (name, email, password) => {
-    const response = await fetch(`${AUTH_URL}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-    return handleResponse(response);
+    return await axiosInstance.post('/auth/register', { name, email, password });
   },
 
   logout: async () => {
-    const response = await fetch(`${AUTH_URL}/logout`, {
-      method: "POST",
-      headers: authHeaders(),
-    });
-    return handleResponse(response);
+    return await axiosInstance.post('/auth/logout');
   },
 
   getMe: async () => {
-    const response = await fetch(`${AUTH_URL}/me`, {
-      method: "GET",
-      headers: authHeaders(),
-    });
-    return handleResponse(response);
+    return await axiosInstance.get('/auth/me');
   },
 
   updateProfile: async (data) => {
-    const response = await fetch(`${AUTH_URL}/profile`, {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify(data),
-    });
-    return handleResponse(response);
+    return await axiosInstance.put('/auth/profile', data);
   },
 
   updatePassword: async (currentPassword, newPassword) => {
@@ -95,132 +73,85 @@ const Api = {
       newPassword,
       password: newPassword,
       confirmPassword: newPassword,
-      current_password: currentPassword,
-      new_password: newPassword,
-      password_confirmation: newPassword
     };
-    const response = await fetch(`${AUTH_URL}/password`, {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify(payload),
-    });
-    return handleResponse(response);
+    return await axiosInstance.put('/auth/password', payload);
   },
 
+  // OTP Endpoints
   sendOtp: async (email) => {
-    const response = await fetch(`${API_BASE_URL}/otp/send`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    return handleResponse(response);
+    return await axiosInstance.post('/otp/send', { email });
   },
 
   resetPasswordWithOtp: async (email, otp, newPassword) => {
-    const response = await fetch(`${API_BASE_URL}/otp/reset-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp, newPassword }),
-    });
-    return handleResponse(response);
+    return await axiosInstance.post('/otp/reset-password', { email, otp, newPassword });
   },
- 
+
+  // Order Endpoints
   createOrder: async (orderData) => {
-    const response = await fetch(`${API_BASE_URL}/orders`, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify(orderData),
-    });
-    return handleResponse(response);
+    return await axiosInstance.post('/orders', orderData);
   },
 
   payOrder: async (orderId, paymentResult) => {
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}/pay`, {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify(paymentResult),
-    });
-    return handleResponse(response);
+    return await axiosInstance.put(`/orders/${orderId}/pay`, paymentResult);
   },
 
   initiatePayment: async (orderId) => {
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}/initiate`, {
-      method: "POST",
-      headers: authHeaders(),
-    });
-    return handleResponse(response);
+    return await axiosInstance.post(`/orders/${orderId}/initiate`);
   },
 
   verifyPayment: async (orderId) => {
-    const response = await fetch(`${API_BASE_URL}/orders/verify`, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ orderId }),
-    });
-    return handleResponse(response);
+    return await axiosInstance.post('/orders/verify', { orderId });
   },
 
   getMyOrders: async () => {
-    const response = await fetch(`${API_BASE_URL}/orders/myorders`, {
-      method: "GET",
-      headers: authHeaders(),
-    });
-    return handleResponse(response);
+    return await axiosInstance.get('/orders/myorders');
   },
 
   getOrderById: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/orders/${id}`, {
-      method: "GET",
-      headers: authHeaders(),
-    });
-    return handleResponse(response);
+    return await axiosInstance.get(`/orders/${id}`);
   },
 
-  getProducts: async (params = {}, options = {}) => {
-    const { signal, ...query } = params || {};
-    const queryString = new URLSearchParams(query).toString();
-    const url = queryString ? `${PRODUCTS_URL}?${queryString}` : PRODUCTS_URL;
-    const response = await fetch(url, {
-      method: "GET",
-      signal: signal || options.signal,
+  // Product Endpoints
+  getProducts: async (params = {}) => {
+    const { signal, ...query } = params;
+    return await axiosInstance.get('/products', { 
+      params: query,
+      signal 
     });
-    return handleResponse(response);
   },
 
-  getProductById: async (id, options = {}) => {
-    const response = await fetch(`${PRODUCTS_URL}/${id}`, {
-      method: "GET",
-      signal: options.signal,
+  getProductById: async (id, config = {}) => {
+    return await axiosInstance.get(`/products/${id}`, {
+      signal: config.signal
     });
-    return handleResponse(response);
   },
 
+  // Admin Product Endpoints
   addProduct: async (productData) => {
-    const isForm = typeof FormData !== "undefined" && productData instanceof FormData;
-    const response = await fetch(ADMIN_URL, {
-      method: "POST",
-      headers: isForm ? authHeadersNoJSON() : authHeaders(),
-      body: isForm ? productData : JSON.stringify(productData),
-    });
-    return handleResponse(response);
+    // Axios will automatically handle Content-Type for FormData
+    return await axiosInstance.post('/admin/products', productData);
   },
 
   updateProduct: async (id, productData) => {
-    const isForm = typeof FormData !== "undefined" && productData instanceof FormData;
-    const response = await fetch(`${ADMIN_URL}/${id}`, {
-      method: "PUT",
-      headers: isForm ? authHeadersNoJSON() : authHeaders(),
-      body: isForm ? productData : JSON.stringify(productData),
-    });
-    return handleResponse(response);
+    // Axios will automatically handle Content-Type for FormData
+    return await axiosInstance.put(`/admin/products/${id}`, productData);
   },
 
   deleteProduct: async (id) => {
-    const response = await fetch(`${ADMIN_URL}/${id}`, {
-      method: "DELETE",
-      headers: authHeaders(),
-    });
-    return handleResponse(response);
+    return await axiosInstance.delete(`/admin/products/${id}`);
+  },
+
+  // Wishlist Endpoints
+  addToWishlist: async (productId) => {
+    return await axiosInstance.post('/wishlist', { productId });
+  },
+
+  removeFromWishlist: async (productId) => {
+    return await axiosInstance.delete(`/wishlist/${productId}`);
+  },
+
+  getWishlist: async () => {
+    return await axiosInstance.get('/wishlist');
   },
 };
 

@@ -5,7 +5,7 @@ const ProfileSidebar = ({ active }) => {
     {
       title: 'Manage My Account',
       links: [
-        { label: 'My Profile', to: '/userProfile', active: active === 'profile' },
+        { label: 'My Profile', to: '/userProfile?tab=profile', active: active === 'profile' || !active },
         { label: 'Address Book', to: '#', active: active === 'address' }, 
         { label: 'My Payment Options', to: '#', active: active === 'payment' } 
       ]
@@ -13,6 +13,7 @@ const ProfileSidebar = ({ active }) => {
     {
       title: 'My Orders',
       links: [
+        { label: 'My Orders', to: '/userProfile?tab=orders', active: active === 'orders' },
         { label: 'My Returns', to: '#', active: active === 'returns' },
         { label: 'My Cancellations', to: '#', active: active === 'cancellations' }
       ]
@@ -34,7 +35,7 @@ const ProfileSidebar = ({ active }) => {
                 <li key={lIdx}>
                   <NavLink 
                     to={link.to} 
-                    className={`${link.active ? 'hover:text-black' : 'hover:text-black'} cursor-pointer block`}
+                    className={`${link.active ? 'text-red-500 font-medium' : 'hover:text-black'} cursor-pointer block transition-colors`}
                   >
                     {link.label}
                   </NavLink>

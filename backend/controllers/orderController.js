@@ -138,6 +138,9 @@ export const initiatePayment = async (req, res) => {
     const phone = order.shippingAddress?.phone || order.user.phone || "N/A";
     const customerId = order.user._id.toString();
 
+    const redirectUrl = process.env.PAYMENT_REDIRECT_URL || "http://localhost:5173/order-success";
+    const returnUrl = `${redirectUrl}/${order.orderId}`;
+
     const request = {
       "order_amount": order.totalPrice,
       "order_currency": "INR",
@@ -149,7 +152,7 @@ export const initiatePayment = async (req, res) => {
         "customer_email": order.user.email
       },
       "order_meta": {
-        "return_url": `${process.env.PAYMENT_REDIRECT_URL}/${order.orderId}`
+        "return_url": returnUrl
       }
     };
 

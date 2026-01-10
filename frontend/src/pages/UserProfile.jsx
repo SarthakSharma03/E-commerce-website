@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Api from '../service/Api'
 import ProfileSidebar from '../components/profile/ProfileSidebar'
 import ProfileForm from '../components/profile/ProfileForm'
+import MyOrders from '../components/profile/MyOrders'
 
 const UserProfile = () => {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const activeTab = searchParams.get('tab') || 'profile'
+  
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState({
     name: '',
@@ -56,11 +60,16 @@ const UserProfile = () => {
       </div>
 
       <div className="flex flex-col md:flex-row gap-10 md:gap-20">
-        <ProfileSidebar active="profile" />
+        <ProfileSidebar active={activeTab} />
 
-   
         <div className="w-full md:w-3/4 shadow-sm p-6 md:p-10 border border-gray-100 rounded-sm">
-          <ProfileForm user={user} onUserUpdate={handleUserUpdate} />
+          {activeTab === 'profile' && <ProfileForm user={user} onUserUpdate={handleUserUpdate} />}
+          {activeTab === 'orders' && <MyOrders />}
+          {activeTab !== 'profile' && activeTab !== 'orders' && (
+             <div className="text-center text-gray-500">
+               Coming Soon
+             </div>
+          )}
         </div>
       </div>
     </div>

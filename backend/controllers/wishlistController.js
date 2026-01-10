@@ -12,6 +12,7 @@ export const addToWishlist = async (req, res) => {
     return jsonResponse(res, { message: "Product ID is required" }, 400);
   }
   const user = await User.findById(req.userId);
+  console.log(user ,'user')
   if (!user.wishlist.includes(productId)) {
     user.wishlist.push(productId);
     await user.save();

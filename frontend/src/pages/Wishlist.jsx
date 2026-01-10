@@ -5,7 +5,7 @@ import { useWishlist } from '../context/useWishlist';
 const Wishlist = () => {
   const { wishlist, removeFromWishlist, loading } = useWishlist();
   const { addToCart } = useCart();
-
+  console.log(wishlist ,'wishlist')
   const handleMoveToCart = (product) => {
     addToCart(product);
   };

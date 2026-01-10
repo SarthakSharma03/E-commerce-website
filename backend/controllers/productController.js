@@ -3,13 +3,14 @@ import { jsonResponse } from "../middleware/jsonResponse.js";
 
 export const createProduct = async (req, res) => {
   const productData = req.body;
+ 
   const imagePaths = req.files.map((item) => {
     return (
       process.env.SERVER_DOMAIN + "/uploads" + "/productImage/" + item.filename
     );
   });
   productData.images = imagePaths;
-  const product = await Product.create(productData);
+  const product = await Product.create(productData); 
   return jsonResponse(res, { success: true, data: product }, 201);
 };
 

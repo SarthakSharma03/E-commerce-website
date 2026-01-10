@@ -48,10 +48,9 @@ app.use((_,res)=>{
     return jsonResponse(res, { message: "route not found" }, 404)
 })
 
-app.use((err,_, res) => {
+app.use((err, req, res, next) => {
   console.error(err)
   return jsonResponse(res, { message: 'Internal Server Error' }, 500)
 })
-
 
 

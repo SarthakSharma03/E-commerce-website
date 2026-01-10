@@ -5,7 +5,7 @@ const adminInitialize = async () => {
   try {
     const adminEmail = 'admin@example.com';
     const adminExists = await User.findOne({ email: adminEmail });
-    console.log(adminExists,'admin Exists or not  ')
+ 
 
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash('Strongpassword@123', 10);

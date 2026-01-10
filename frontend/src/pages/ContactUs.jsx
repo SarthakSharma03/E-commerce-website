@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { IoCallOutline } from "react-icons/io5";
@@ -87,7 +86,7 @@ const ContactForm = () => {
   });
 
   const onSubmit = async (data) => {
-    // Simulate API call
+ 
     console.log("Form Data:", data);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     reset();

@@ -83,6 +83,7 @@ const ProductCard = ({
   };
 
   return (
+    <div className="bg-white border border-gray-100 rounded-2xl shxadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group hover:scale-110">
     <div className="group relative rounded-lg border border-gray-200 bg-white">
       <div className="relative">  
         <button
@@ -147,6 +148,7 @@ const ProductCard = ({
         </div>
         <Rating value={displayRating} />
       </div>
+    </div>
     </div>
   );
 };

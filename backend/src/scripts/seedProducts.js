@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from '../../models/productModel.js';
-import  productImg from '../images/product.jpg'
-import ps5 from '../images/ps-5.jpg'
-import speakers from '../images/speakers.avif'
-import perfume from '../images/perfume.webp'
-import womenFashion from '../images/womenFashion.jpg'
+const productImg = 'https://placehold.co/600x400/png';
+const ps5 = 'https://placehold.co/600x400/png';
+const speakers = 'https://placehold.co/600x400/png';
+const perfume = 'https://placehold.co/600x400/png';
+const womenFashion = 'https://placehold.co/600x400/png';
 
 dotenv.config();
 
@@ -449,7 +449,7 @@ const seedProducts = async () => {
       description: p.description ?? '',
       price: p.price ?? 0,
       category: p.category ?? 'General',
-      image: p.image,
+      images: [p.image],
       stock: typeof p.stock === 'number' ? p.stock : 0,
       oldPrice: typeof p.oldPrice === 'number' ? p.oldPrice : undefined,
       discount: typeof p.discount === 'number' ? p.discount : 0,

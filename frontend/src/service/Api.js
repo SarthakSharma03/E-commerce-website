@@ -4,11 +4,9 @@ const API_BASE_URL = "http://localhost:3000";
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
-  // Axios automatically sets Content-Type to application/json for objects
-  // and multipart/form-data for FormData, so we don't need to set it globally.
+
 });
 
-// Request Interceptor to add Token
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('auth_token');
@@ -22,7 +20,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response Interceptor to handle errors
+
 axiosInstance.interceptors.response.use(
   (response) => {
     return response.data;
@@ -30,16 +28,14 @@ axiosInstance.interceptors.response.use(
   (error) => {
     let errorMessage = "Something went wrong";
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
+     
       const data = error.response.data;
       errorMessage = data.error || data.message || errorMessage;
     } else if (error.request) {
-      // The request was made but no response was received
+     
       errorMessage = "No response from server";
     } else {
-      // Something happened in setting up the request that triggered an Error
-      errorMessage = error.message;
+          errorMessage = error.message;
     }
     return Promise.reject(new Error(errorMessage));
   }
@@ -128,12 +124,12 @@ const Api = {
 
   // Admin Product Endpoints
   addProduct: async (productData) => {
-    // Axios will automatically handle Content-Type for FormData
+   
     return await axiosInstance.post('/admin/products', productData);
   },
 
   updateProduct: async (id, productData) => {
-    // Axios will automatically handle Content-Type for FormData
+   
     return await axiosInstance.put(`/admin/products/${id}`, productData);
   },
 

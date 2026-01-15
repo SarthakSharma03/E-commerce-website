@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { CiHeart } from 'react-icons/ci'
 import { MdOutlineShoppingCart, MdMenu, MdClose, MdLogout, MdPersonOutline, MdStarOutline } from 'react-icons/md'
 import { PiSignInBold } from 'react-icons/pi'
-import { IoIosSearch } from 'react-icons/io'
 import { FiUser } from 'react-icons/fi'
 import { NavLink, useNavigate } from 'react-router-dom'
 import Api from '../service/Api'
@@ -95,9 +94,11 @@ const Header = () => {
                               <MdPersonOutline size={20} /> Manage My Account
                            </NavLink>
                            <div className="flex items-center gap-3 hover:text-gray-300 text-sm cursor-pointer">
-                          <NavLink>
+                             <NavLink to="/MyOrders" className="flex items-center gap-3 hover:text-gray-300 text-sm" onClick={() => setIsUserDropdownOpen(false)}>
                              <MdOutlineShoppingCart size={20} /> My Order
-                          </NavLink>
+                             </NavLink>
+                             
+                    
                          
                            </div>
                            <div className="flex items-center gap-3 hover:text-gray-300 text-sm cursor-pointer">
@@ -176,17 +177,6 @@ const Header = () => {
                )}
             </ul>
         
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="What are you looking for?"
-                className="w-full pl-4 pr-10 py-2 text-sm bg-gray-100 rounded-md focus:outline-none"
-              />
-              <IoIosSearch
-                size={20}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-black"
-              />
-            </div>
              {isAuthenticated && (
                 <button onClick={handleLogout} className="text-left text-red-500 font-medium">Logout</button>
              )}

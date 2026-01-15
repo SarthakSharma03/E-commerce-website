@@ -56,15 +56,19 @@ export const getOrderById = async (req, res) => {
   const isObjectId = req.params.id.match(/^[0-9a-fA-F]{24}$/);
 
   if (isObjectId) {
-      order = await Order.findById(req.params.id).populate(
-        "user",
-        "name email"
-      );
+      order = await Order.findById(req.params.id)
+        .populate("user", "name email")
+        .populate({
+          path: "orderItems.product",
+          select: "name images price category"
+        });
   } else {
-      order = await Order.findOne({ orderId: req.params.id }).populate(
-        "user",
-        "name email"
-      );
+      order = await Order.findOne({ orderId: req.params.id })
+        .populate("user", "name email")
+        .populate({
+          path: "orderItems.product",
+          select: "name images price category"
+        });
   }
 
   if (order) {
@@ -111,12 +115,20 @@ export const updateOrderToDelivered = async (req, res) => {
 };
 
 export const getMyOrders = async (req, res) => {
-  const orders = await Order.find({ user: req.user._id });
+  const orders = await Order.find({ user: req.user._id }).populate({
+    path: "orderItems.product",
+    select: "name images price category"
+  });
   return jsonResponse(res, orders);
 };
 
 export const getOrders = async (req, res) => {
-  const orders = await Order.find({}).populate("user", "id name");
+  const orders = await Order.find({})
+    .populate("user", "id name")
+    .populate({
+      path: "orderItems.product",
+      select: "name images price category"
+    });
   return jsonResponse(res, orders);
 };
 

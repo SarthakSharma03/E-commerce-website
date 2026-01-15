@@ -17,6 +17,7 @@ import About from './pages/About'
 import ProductDetails from './pages/ProductDetails'
 import Explore from './pages/Explore'
 import Checkout from './pages/Checkout'
+import MyOrders from './components/profile/MyOrders.jsx';
 import OrderSuccess from './pages/OrderSuccess'
 import Error from './pages/Error'
 
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
       { path: 'product/:id', Component: ProductDetails },
       { path: 'explore', Component: Explore },
       { path: 'userProfile', element: <RequireAuth><UserProfile /></RequireAuth> },
+      { path: 'Myorders', element:<RequireAuth><MyOrders /></RequireAuth>},
       { path: 'wishlist', element: <RequireAuth><Wishlist /></RequireAuth> },
       { path: 'about', Component: About },
       { path: '*', element: <Error title="404 Not Found" message="The page you are looking for does not exist." /> },

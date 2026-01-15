@@ -197,7 +197,7 @@ export default function ForgetPasswordForm() {
               </p>
             )}
           </div>
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
@@ -206,7 +206,7 @@ export default function ForgetPasswordForm() {
             />
             <button
               type="button"
-              className="absolute left-235 top-135 text-gray-500 hover:text-gray-700"
+              className="absolute right-0 top-2 text-gray-500 hover:text-gray-700"
               onClick={() => setShowConfirmPassword((prev) => !prev)}
             >
               {showConfirmPassword ? (

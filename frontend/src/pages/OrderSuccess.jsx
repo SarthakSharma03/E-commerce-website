@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink ,useNavigate, useParams } from 'react-router-dom';
 import CheckoutSteps from '../components/checkout/CheckoutSteps';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Api from '../service/Api';
@@ -118,10 +118,11 @@ const OrderSuccess = () => {
            </button>
            
            <button 
-             onClick={() => navigate('/orders/myorders')} 
+             onClick={() => navigate('/Myorders')} 
              className="border border-black text-black px-8 py-3 rounded hover:bg-gray-50 transition-colors"
            >
              View My Orders
+        
            </button>
         </div>
       </div>

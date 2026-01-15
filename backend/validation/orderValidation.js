@@ -4,10 +4,7 @@ export const orderSchema = object({
   orderItems: array()
     .of(
       object({
-        name: string().required(),
         qty: number().required().min(1),
-        image: string().required(),
-        price: number().required().min(0),
         product: string().required(),
       })
     )

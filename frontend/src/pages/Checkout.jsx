@@ -46,10 +46,7 @@ const Checkout = () => {
 
     const orderData = {
       orderItems: cartItems.map(item => ({
-        name: item.name || item.title,
         qty: item.quantity,
-        image: item.image || (item.images && item.images[0]) || '/placeholder.jpg',
-        price: item.price,
         product: item._id || item.id
       })),
       shippingAddress: {

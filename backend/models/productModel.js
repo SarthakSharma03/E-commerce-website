@@ -14,7 +14,6 @@ const productSchema = new mongoose.Schema({
   reviews: { type: Number, default: 0 }
 }, { timestamps: true });
 
-// Indexes for faster queries and sorts
 productSchema.index({ name: 1 });
 productSchema.index({ category: 1 });
 productSchema.index({ price: 1 });

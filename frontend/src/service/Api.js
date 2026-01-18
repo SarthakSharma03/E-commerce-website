@@ -51,6 +51,10 @@ const Api = {
     return await axiosInstance.post('/auth/register', { name, email, password });
   },
 
+  registerAdmin: async (name, email, password) => {
+    return await axiosInstance.post('/auth/register', { name, email, password, role: 'admin' });
+  },
+
   logout: async () => {
     return await axiosInstance.post('/auth/logout');
   },
@@ -107,36 +111,6 @@ const Api = {
     return await axiosInstance.get(`/orders/${id}`);
   },
 
-  // Product Endpoints
-  getProducts: async (params = {}) => {
-    const { signal, ...query } = params;
-    return await axiosInstance.get('/products', { 
-      params: query,
-      signal 
-    });
-  },
-
-  getProductById: async (id, config = {}) => {
-    return await axiosInstance.get(`/products/${id}`, {
-      signal: config.signal
-    });
-  },
-
-  // Admin Product Endpoints
-  addProduct: async (productData) => {
-   
-    return await axiosInstance.post('/admin/products', productData);
-  },
-
-  updateProduct: async (id, productData) => {
-   
-    return await axiosInstance.put(`/admin/products/${id}`, productData);
-  },
-
-  deleteProduct: async (id) => {
-    return await axiosInstance.delete(`/admin/products/${id}`);
-  },
-
   // Wishlist Endpoints
   addToWishlist: async (productId) => {
     return await axiosInstance.post('/wishlist', { productId });
@@ -148,6 +122,31 @@ const Api = {
 
   getWishlist: async () => {
     return await axiosInstance.get('/wishlist');
+  },
+
+  // Admin Product Endpoints
+  createProduct: async (formData) => {
+    return await axiosInstance.post('/admin/products', formData);
+  },
+
+  updateProduct: async (id, formData) => {
+    return await axiosInstance.put(`/admin/products/${id}`, formData);
+  },
+
+  deleteProduct: async (id) => {
+    return await axiosInstance.delete(`/admin/products/${id}`);
+  },
+
+  getProducts: async (params) => {
+    return await axiosInstance.get('/products', { params });
+  },
+  
+  getProductById: async (id) => {
+    return await axiosInstance.get(`/products/${id}`);
+  },
+
+  rateProduct: async (id, rating) => {
+    return await axiosInstance.post(`/products/${id}/rate`, { rating });
   },
 };
 

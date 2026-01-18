@@ -10,17 +10,22 @@ import { useWishlist } from '../context/useWishlist';
 import SectionTitle from '../UI/SectionTitle';
 import ProductCard from '../UI/ProductCard';
 import Rating from '../UI/Rating';
+import { useAuth } from '../context/useAuth';
+import { toast } from 'react-toastify';
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [userRating, setUserRating] = useState(0);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,6 +71,26 @@ const ProductDetails = () => {
     return () => controller.abort();
   }, [id]);
 
+  const handleRateProduct = async (ratingValue) => {
+    if (!isAuthenticated) {
+      toast.error('Please log in to rate products');
+      return;
+    }
+    setIsSubmittingRating(true);
+    try {
+      const res = await Api.rateProduct(id, ratingValue);
+      if (res?.success && res.data) {
+        setProduct(res.data);
+        setUserRating(ratingValue);
+        toast.success('Thanks for your rating!');
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to submit rating');
+    } finally {
+      setIsSubmittingRating(false);
+    }
+  };
+
   const handleToggleWishlist = () => {
       if (!product) return;
       if (isInWishlist(product._id)) {
@@ -110,8 +135,25 @@ const ProductDetails = () => {
       
         <div className="flex-1 space-y-6">
           <h1 className="text-2xl font-bold">{product.title}</h1>
-          <Rating value={product.rating} reviews={product.reviews || 0} />
+          <div className="flex items-center gap-3">
+            <Rating value={product.rating} />
+            <span className="text-sm text-gray-600">
+              {product.reviews || 0} review{(product.reviews || 0) === 1 ? '' : 's'}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-700">Rate this product:</span>
+            <Rating
+              value={userRating || product.rating}
+              interactive
+              onChange={handleRateProduct}
+            />
+            {isSubmittingRating && (
+              <span className="text-xs text-gray-500">Saving...</span>
+            )}
+          </div>
           <div className="text-xl font-medium">${product.price}</div>
+          <div className="text-l font-medium">Category : {product.category}</div>
           <p className="text-sm text-gray-600 border-b pb-6 border-gray-300">
             {product.description}
           </p>
@@ -226,6 +268,7 @@ const ProductDetails = () => {
               key={p._id || p.id}
               product={p}
               onAddToCart={() => addToCart(p)}
+              onToggleProducts={() => navigate(`/product/${p._id || p.id}`)}
             />
           ))}
         </div>

@@ -3,10 +3,11 @@ import { jsonResponse } from "../middleware/jsonResponse.js";
 
 export const createProduct = async (req, res) => {
   const productData = req.body;
+  const domain = process.env.SERVER_DOMAIN || 'http://localhost:3000';
  
   const imagePaths = req.files.map((item) => {
     return (
-      process.env.SERVER_DOMAIN + "/uploads" + "/productImage/" + item.filename
+      domain + "/uploads" + "/productImage/" + item.filename
     );
   });
   productData.images = imagePaths;
@@ -17,12 +18,14 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   const updates = { ...req.body };
   const { id } = req.params;
+  const domain = process.env.SERVER_DOMAIN || 'http://localhost:3000';
+
   delete updates.images;
   let newImages = [];
   if (req.files && req.files.length > 0) {
     newImages = req.files.map((item) => {
       return (
-        process.env.SERVER_DOMAIN +
+        domain +
         "/uploads" +
         "/productImage/" +
         item.filename
@@ -50,11 +53,22 @@ export const deleteProduct = async (req, res) => {
 };
 
 export const getProducts = async (req, res) => {
-  const { search, sort, page = 1, limit = 12 } = req.query;
+  const { search, sort, page = 1, limit = 12, category, categories } = req.query;
 
   const query = {};
   if (search) {
     query.name = { $regex: search, $options: "i" };
+  }
+  if (category) {
+    query.category = category;
+  }
+  if (categories) {
+    const list = Array.isArray(categories)
+      ? categories
+      : String(categories).split(",").map((s) => s.trim()).filter(Boolean);
+    if (list.length > 0) {
+      query.category = { $in: list };
+    }
   }
 
   let sortOptions = {};
@@ -110,4 +124,48 @@ export const getProductById = async (req, res) => {
   const product = await Product.findById(req.params.id).lean();
   if (!product) return jsonResponse(res, { error: "Product not found" }, 404);
   return jsonResponse(res, { success: true, data: product });
+};
+
+export const rateProduct = async (req, res) => {
+  const { rating } = req.body;
+  const { id } = req.params;
+
+  const numericRating = Number(rating);
+  if (!Number.isFinite(numericRating) || numericRating < 1 || numericRating > 5) {
+    return jsonResponse(res, { error: "Rating must be between 1 and 5" }, 400);
+  }
+
+  const product = await Product.findById(id);
+  if (!product) {
+    return jsonResponse(res, { error: "Product not found" }, 404);
+  }
+
+  if (!Array.isArray(product.ratings)) {
+    product.ratings = [];
+  }
+
+  const existing = product.ratings.find(
+    (entry) => entry.user.toString() === req.userId
+  );
+
+  if (existing) {
+    existing.value = numericRating;
+  } else {
+    product.ratings.push({
+      user: req.userId,
+      value: numericRating,
+    });
+  }
+
+  if (product.ratings.length > 0) {
+    const total = product.ratings.reduce((sum, entry) => sum + entry.value, 0);
+    product.rating = total / product.ratings.length;
+    product.reviews = product.ratings.length;
+  } else {
+    product.rating = 0;
+    product.reviews = 0;
+  }
+
+  const updated = await product.save();
+  return jsonResponse(res, { success: true, data: updated });
 };

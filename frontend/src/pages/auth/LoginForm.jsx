@@ -127,18 +127,29 @@ const LoginForm = () => {
             {isSubmitting ? 'Processing...' : 'Log In'}
           </button>
         </div>
-        <div className="flex items-center justify-between text-sm mt-4">
-          <div className="text-gray-600">
-            <div className="flex items-center gap-2">
-              <span>Don't have an account?</span>
-              <NavLink to="/auth/signup" className="text-black font-medium hover:underline">
-                Sign Up
-              </NavLink>
+        <div className="flex flex-col gap-4 text-sm mt-4">
+          <div className="flex items-center justify-between">
+            <div className="text-gray-600">
+              <div className="flex items-center gap-2">
+                <span>Don't have an account?</span>
+                <NavLink to="/auth/signup" className="text-black font-medium hover:underline">
+                  Sign Up
+                </NavLink>
+              </div>
             </div>
+            <NavLink to="/auth/forget-password" className="text-red-500 hover:underline cursor-pointer">
+              Forgot Password?
+            </NavLink>
           </div>
-          <NavLink to="/auth/forget-password" className="text-red-500 hover:underline cursor-pointer">
-            Forgot Password?
-          </NavLink>
+          <div className="flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => navigate('/admin/login')}
+              className="text-xs md:text-sm font-medium text-red-500 hover:underline"
+            >
+              Admin? Go to admin login
+            </button>
+          </div>
         </div>
       </form>
     </>

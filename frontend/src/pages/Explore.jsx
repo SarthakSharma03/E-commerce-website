@@ -25,6 +25,7 @@ const Explore = () => {
     search: searchParams.get("search") || "",
     sort: "newest",
     page: Number(searchParams.get("page")) || 1,
+    category: searchParams.get("category") || "",
   });
 
   const [searchTerm, setSearchTerm] = useState(filters.search);
@@ -46,13 +47,28 @@ const Explore = () => {
     setLoading(true);
     (async () => {
       try {
-        const response = await Api.getProducts({
+        const params = {
           search: filters.search,
           sort: filters.sort,
           page: filters.page,
           limit: 12,
           signal: controller.signal,
-        });
+        };
+        if (filters.category) {
+          if (filters.category === "Electronics") {
+            params.categories = [
+              "computer",
+              "phone",
+              "smartWatch",
+              "Camera",
+              "Headphone",
+              "Gaming",
+            ].join(",");
+          } else {
+            params.category = filters.category;
+          }
+        }
+        const response = await Api.getProducts(params);
         if (response?.success) {
           setProducts(response.data);
           setPagination(response.pagination);
@@ -69,6 +85,7 @@ const Explore = () => {
     const params = {};
     if (filters.search) params.search = filters.search;
     if (filters.page > 1) params.page = filters.page;
+    if (filters.category) params.category = filters.category;
     setSearchParams(params);
     return () => controller.abort();
   }, [filters, setSearchParams]);
@@ -109,6 +126,22 @@ const Explore = () => {
             />
           </div>
 
+        {filters.category && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm px-3 py-2 border rounded bg-gray-50">
+              Category: {filters.category}
+            </span>
+            <button
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, category: "", page: 1 }))
+              }
+              className="text-sm text-red-500 hover:underline cursor-pointer"
+            >
+              Clear
+            </button>
+          </div>
+        )}
+
           <select
             value={filters.sort}
             onChange={(e) =>
@@ -125,6 +158,25 @@ const Explore = () => {
             <option value="price-desc">Price: High to Low</option>
             <option value="name-asc">Name: A–Z</option>
             <option value="name-desc">Name: Z–A</option>
+          </select>
+          <select
+            value={filters.category}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                category: e.target.value,
+                page: 1,
+              }))
+            }
+            className="border rounded px-4 py-2 bg-white focus:border-red-500 hover:cursor-pointer"
+          >
+            <option value="">Category</option>
+            <option value="computer">computer</option>
+            <option value="phone">phone</option>
+            <option value="smartWatch">smartWatch</option>
+            <option value="headphone">Headphone</option>
+            <option value="camera">Camera</option>
+            <option value="gaming">Gaming</option>
           </select>
         </div>
       </div>
@@ -197,7 +249,7 @@ const Explore = () => {
           <button
             onClick={() => {
               setSearchTerm("");
-              setFilters({ search: "", sort: "newest", page: 1 });
+              setFilters({ search: "", sort: "newest", page: 1, category: "" });
             }}
             className="mt-4 text-red-500 hover:underline"
           >

@@ -13,6 +13,7 @@ const products = [
     {
     id: 101,
     title: 'Fleece Hoodie',
+    category:'gaming',
     image: productImg,
     price: 49,
     oldPrice: 69,
@@ -25,6 +26,7 @@ const products = [
   {
     id: 102,
     title: 'Sneakers',
+    category:'gaming',
     image: productImg,
     price: 89,
     oldPrice: 119,
@@ -37,6 +39,7 @@ const products = [
   {
     id: 103,
     title: 'Wireless Earbuds',
+    category:'computer',
     image: productImg,
     price: 59,
     rating: 4.3,
@@ -48,6 +51,7 @@ const products = [
   {
     id: 104,
     title: 'Smart Lamp',
+    category:'computer',
     image: productImg,
     price: 39,
     rating: 4.0,
@@ -59,6 +63,7 @@ const products = [
   {
     id: 201,
     title: 'PlayStation 5',
+    category:'gaming',
     image: ps5,
     price: 499,
     rating: 4.9,
@@ -70,6 +75,7 @@ const products = [
   {
     id: 202,
     title: 'Women’s Collections',
+    category:'computer',
     image: womenFashion,
     price: 120,
     rating: 4.5,
@@ -81,6 +87,7 @@ const products = [
   {
     id: 203,
     title: 'Speakers',
+    category:'phone',
     image: speakers,
     price: 199,
     rating: 4.6,
@@ -92,6 +99,7 @@ const products = [
   {
     id: 204,
     title: 'Perfume',
+    category:'phone',
     image: perfume,
     price: 85,
     rating: 4.7,
@@ -103,6 +111,7 @@ const products = [
   {
     id: 205,
     title: 'Denim Jacket',
+    category:'phone',
     image: productImg,
     price: 99,
     oldPrice: 129,
@@ -115,6 +124,7 @@ const products = [
   {
     id: 206,
     title: 'Running Shoes',
+    category:'Groceries & Pets',
     image: productImg,
     price: 110,
     oldPrice: 150,
@@ -127,6 +137,7 @@ const products = [
   {
     id: 207,
     title: 'Bluetooth Headphones',
+    category:'Groceries & Pets',
     image: productImg,
     price: 79,
     rating: 4.2,
@@ -138,6 +149,7 @@ const products = [
   {
     id: 208,
     title: 'Gaming Chair',
+    category:'camera',
     image: productImg,
     price: 249,
     rating: 4.7,
@@ -149,6 +161,7 @@ const products = [
   {
     id: 209,
     title: 'Smart Watch',
+    category:'camera',
     image: productImg,
     price: 199,
     oldPrice: 249,
@@ -161,6 +174,7 @@ const products = [
   {
     id: 210,
     title: 'Casual T-Shirt',
+    category:'headphone',
     image: productImg,
     price: 29,
     rating: 4.1,
@@ -172,6 +186,7 @@ const products = [
   {
     id: 211,
     title: 'Leather Wallet',
+    category:'Baby’s & Toys',
     image: productImg,
     price: 45,
     rating: 4.5,
@@ -183,6 +198,7 @@ const products = [
   {
     id: 212,
     title: 'Office Backpack',
+    category:'Baby’s & Toys',
     image: productImg,
     price: 89,
     rating: 4.6,
@@ -194,6 +210,7 @@ const products = [
   {
     id: 213,
     title: 'Wireless Mouse',
+    category:'Sports & Outdoor',
     image: productImg,
     price: 35,
     rating: 4.2,
@@ -205,6 +222,7 @@ const products = [
   {
     id: 214,
     title: 'Mechanical Keyboard',
+    category:'Sports & Outdoor',
     image: productImg,
     price: 129,
     rating: 4.8,
@@ -216,6 +234,7 @@ const products = [
   {
     id: 215,
     title: 'Winter Coat',
+    category:'computer',
     image: productImg,
     price: 179,
     oldPrice: 219,
@@ -228,6 +247,7 @@ const products = [
   {
     id: 216,
     title: 'Yoga Mat',
+    category:'computer',
     image: productImg,
     price: 39,
     rating: 4.4,
@@ -239,6 +259,7 @@ const products = [
   {
     id: 217,
     title: 'Sunglasses',
+    category:'Medicine',
     image: productImg,
     price: 59,
     rating: 4.3,
@@ -250,6 +271,7 @@ const products = [
   {
     id: 218,
     title: 'Formal Shoes',
+    category:'computer',
     image: productImg,
     price: 120,
     rating: 4.5,
@@ -261,6 +283,7 @@ const products = [
   {
     id: 219,
     title: 'Smart TV 55"',
+    category:'Medicine',
     image: productImg,
     price: 699,
     rating: 4.7,
@@ -272,6 +295,7 @@ const products = [
   {
     id: 220,
     title: 'Coffee Maker',
+    category:'headphone',
     image: productImg,
     price: 149,
     rating: 4.4,
@@ -283,6 +307,7 @@ const products = [
   {
     id: 221,
     title: 'Air Fryer',
+    category:'headphone',
     image: productImg,
     price: 179,
     rating: 4.6,
@@ -294,6 +319,7 @@ const products = [
   {
     id: 222,
     title: 'Bedside Table Lamp',
+    category:'Home & Lifestyle',
     image: productImg,
     price: 49,
     rating: 4.1,
@@ -305,6 +331,7 @@ const products = [
   {
     id: 223,
     title: 'Power Bank 20000mAh',
+    category:'Home & Lifestyle',
     image: productImg,
     price: 59,
     rating: 4.5,
@@ -316,6 +343,7 @@ const products = [
   {
     id: 224,
     title: 'Wireless Charger',
+    category:'headphone',
     image: productImg,
     price: 39,
     rating: 4.2,
@@ -327,6 +355,7 @@ const products = [
   {
     id: 225,
     title: 'Travel Duffel Bag',
+    category:'camera',
     image: productImg,
     price: 99,
     rating: 4.4,
@@ -338,6 +367,7 @@ const products = [
   {
     id: 226,
     title: 'Men’s Watch',
+    category:'camera',
     image: productImg,
     price: 159,
     rating: 4.6,
@@ -349,6 +379,7 @@ const products = [
   {
     id: 227,
     title: 'Hair Dryer',
+    category:'camera',
     image: productImg,
     price: 69,
     rating: 4.3,
@@ -360,6 +391,7 @@ const products = [
   {
     id: 228,
     title: 'Electric Kettle',
+    category:'Men’s Fashion',
     image: productImg,
     price: 49,
     rating: 4.2,
@@ -371,6 +403,7 @@ const products = [
   {
     id: 229,
     title: 'Home Office Desk',
+    category:'Men’s Fashion',
     image: productImg,
     price: 299,
     rating: 4.7,
@@ -382,6 +415,7 @@ const products = [
   {
     id: 230,
     title: 'Floor Carpet',
+    category:'computer',
     image: productImg,
     price: 139,
     rating: 4.4,
@@ -393,6 +427,7 @@ const products = [
   {
     id: 231,
     title: 'Wall Clock',
+    category:'computer',
     image: productImg,
     price: 29,
     rating: 4.0,
@@ -404,6 +439,7 @@ const products = [
   {
     id: 232,
     title: 'Desk Organizer',
+    category:'Woman’s Fashion',
     image: productImg,
     price: 25,
     rating: 4.1,
@@ -415,6 +451,7 @@ const products = [
   {
     id: 233,
     title: 'Bluetooth Speaker Mini',
+    category:'gaming',
     image: speakers,
     price: 79,
     rating: 4.5,
@@ -426,6 +463,7 @@ const products = [
   {
     id: 234,
     title: 'Luxury Perfume',
+    category:'Woman’s Fashion',
     image: perfume,
     price: 120,
     rating: 4.8,

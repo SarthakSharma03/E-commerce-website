@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import iphone17 from '../images/iphone-17.webp'
 import iphone16 from '../images/iphone-16.jpeg'
 import iphone15 from '../images/iphone-15.webp'
+import { useNavigate } from "react-router-dom";
 import { FaChevronRight } from "react-icons/fa6";
+
 
 const slides = [
   {
@@ -26,20 +28,22 @@ const slides = [
 ]
 
 const categories = [
-  'Woman’s Fashion',
-  'Men’s Fashion',
-  'Electronics',
-  'Home & Lifestyle',
-  'Medicine',
-  'Sports & Outdoor',
-  'Baby’s & Toys',
-  'Groceries & Pets',
-  'Health & Beauty',
+ { id: 1,  title: "Woman’s Fashion"   },
+  { id: 2,  title: "Men’s Fashion"     },
+  { id: 3,  title: "Electronics"       },
+  { id: 4,  title: "Home & Lifestyle"  },
+  { id: 5,  title: "Medicine"          },
+  { id: 6,  title: "Sports & Outdoor"  },
+  { id: 7,  title: "Baby’s & Toys"     },
+  { id: 8,  title: "Groceries & Pets"  },
+  { id: 9,  title: "Health & Beauty"   }
 ]
 
 export default function HeroSection() {
   const [current, setCurrent] = useState(0)
+   const [activeCard, setActiveCard] = useState(null);
   const [fade, setFade] = useState(true)
+const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,20 +56,26 @@ export default function HeroSection() {
 
     return () => clearInterval(interval)
   }, [])
-
+    const handleClick = (item) => {
+    setActiveCard(item.id);
+    const categoryParam = encodeURIComponent(item.title);
+    navigate(`/explore?category=${categoryParam}`);
+  };
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-6 mb-8">
       <div className="flex flex-col md:flex-row gap-6">
      
         <aside className="hidden md:block w-full md:w-1/4 border-r border-gray-200 pr-4 pt-6">
           <ul className="space-y-3 text-sm font-medium text-black">
-            {categories.map((item, index) => (
+            {categories.map((item) => (
               <li
-                key={index}
-                className="flex cursor-pointer items-center justify-between hover:text-red-500 transition-colors"
+                key={item.id}
+                className={`flex cursor-pointer items-center justify-between  transition-colors ${
+              activeCard === item.id ? 'hover:text-red-500' : 'hover:text-red-500'
+            } `}
+               onClick={() => handleClick(item)}
               >
-                {item}
-                {item.includes("Fashion") && <FaChevronRight className="text-xs" />}
+                {item.title}
               </li>
             ))}
           </ul>
@@ -84,7 +94,10 @@ export default function HeroSection() {
               <h1 className="mb-6 text-3xl md:text-5xl font-bold leading-tight">
                 {slides[current].title}
               </h1>
-              <button className="group flex items-center gap-2 text-base font-medium underline cursor-pointer hover:text-gray-300 transition-colors mx-auto md:mx-0">
+              <button
+                onClick={() => navigate('/explore')}
+                className="group flex items-center gap-2 text-base font-medium underline cursor-pointer hover:text-gray-300 transition-colors mx-auto md:mx-0"
+              >
                 Shop Now <FaChevronRight className="text-sm group-hover:translate-x-1 transition-transform" />
               </button>
             </div>

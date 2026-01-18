@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 const ArrivalCard = ({ image, title, description, large }) => {
+  const navigate = useNavigate();
   return (
     <div
       className={`relative overflow-hidden rounded-xl bg-black text-white group
@@ -15,7 +18,10 @@ const ArrivalCard = ({ image, title, description, large }) => {
         {description && (
           <p className="text-sm text-gray-200 mt-1">{description}</p>
         )}
-        <button className="mt-3 w-fit text-sm underline cursor-pointer  ">
+        <button
+          onClick={() => navigate('/explore')}
+          className="mt-3 w-fit text-sm underline cursor-pointer"
+        >
           Shop Now
         </button>
       </div>

@@ -27,7 +27,7 @@ const ProductForm = () => {
     const fetchProduct = async () => {
       setFetching(true);
       try {
-        const response = await Api.getProductById(id);
+        const response = await Api.getAdminProductById(id);
         if (response.success) {
           const product = response.data;
           setFormData({
@@ -39,7 +39,7 @@ const ProductForm = () => {
             oldPrice: product.oldPrice || '',
             discount: product.discount || '',
           });
-          setExistingImages(product.images);
+          setExistingImages(product.images || []);
         }
       } catch {
         toast.error('Failed to load product details');
@@ -99,7 +99,14 @@ const ProductForm = () => {
     }
   };
 
-  if (fetching) return <div className="p-6">Loading product data...</div>;
+ if (fetching) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-red-500 mb-4"></div>
+        <p className="text-gray-600">Loading product data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">

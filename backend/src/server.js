@@ -8,19 +8,14 @@ import adminRoute from '../routes/adminRoute.js'
 import productRoute from '../routes/productRoute.js'
 import orderRoute from '../routes/orderRoute.js'
 import wishlistRoute from '../routes/wishlistRoute.js'
+import contactRoute from  '../routes/contactRoute.js'
 import otpRoute from '../routes/otpRoute.js'
+import pincodeRoute from '../routes/pincodeRoute.js'
 import { jsonResponse } from '../middleware/jsonResponse.js'
 import adminInitialize from '../utils/adminInitialize.js'
+import { startCronJobs } from '../utils/cronJobs.js'
 
 envConfig()
-
-
-connectDB().then(async () => {
-  await adminInitialize();
-  app.listen(PORT,()=>{
-    console.log(`Server running on @ PORT:${PORT}`);
-  })
-});
 
 const app=express()
 const PORT=process.env.PORT || 3000
@@ -43,6 +38,8 @@ app.use('/products', productRoute)
 app.use('/orders', orderRoute)
 app.use('/wishlist', wishlistRoute)
 app.use('/otp',otpRoute)
+app.use('/contact',contactRoute)
+app.use('/pincode', pincodeRoute)
 
 app.use((_,res)=>{
     return jsonResponse(res, { message: "route not found" }, 404)
@@ -52,5 +49,13 @@ app.use((err, req, res, next) => {
   console.error(err)
   return jsonResponse(res, { message: 'Internal Server Error' }, 500)
 })
+
+connectDB().then(async () => {
+  await adminInitialize();
+  startCronJobs(); // Start the cron jobs
+  app.listen(PORT,()=>{
+    console.log(`Server running on @ PORT:${PORT}`);
+  })
+});
 
 

@@ -20,7 +20,6 @@ import Checkout from './pages/Checkout'
 import MyOrders from './components/profile/MyOrders.jsx';
 import OrderSuccess from './pages/OrderSuccess'
 import Error from './pages/Error'
-
 import { RequireAuth, GuestOnly } from './hoc/withAuth.jsx'
 import { RequireAdmin } from './hoc/withAdmin.jsx';
 import AdminLayout from './layout/AdminLayout.jsx';
@@ -28,6 +27,11 @@ import AdminLogin from './pages/admin/AdminLogin.jsx';
 import AdminSignup from './pages/admin/AdminSignup.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
 import ProductForm from './pages/admin/ProductForm.jsx';
+import AdminOrders from './pages/admin/AdminOrders.jsx';
+import AdminMessages from './pages/admin/AdminMessages.jsx';
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import ReturnPolicy from './pages/ReturnPolicy'
+import TermsOfUse from './pages/TermsOfUse'
 
 const router = createBrowserRouter([
   {
@@ -59,19 +63,22 @@ const router = createBrowserRouter([
       { path: 'Myorders', element:<RequireAuth><MyOrders /></RequireAuth>},
       { path: 'wishlist', element: <RequireAuth><Wishlist /></RequireAuth> },
       { path: 'about', Component: About },
+      { path: 'privacy-policy', element:< PrivacyPolicy/> },
+      { path: 'terms-of-use', element: <TermsOfUse/> },
+      { path: 'return-policy', element: <ReturnPolicy/> },
       { path: '*', element: <Error title="404 Not Found" message="The page you are looking for does not exist." /> },
     ],
   },
   {
     path: '/admin',
-    element: <AdminLayout />, // Layout for admin pages
+    element: <AdminLayout />, 
     children: [
       { index: true, element: <Navigate to="products/add" replace /> },
       { path: 'login', element: <AdminLogin /> },
       { path: 'signup', element: <AdminSignup /> },
       { 
         path: 'dashboard', 
-        element: <RequireAdmin><Dashboard /></RequireAdmin> 
+        element:  <RequireAdmin><Dashboard /></RequireAdmin>
       },
       { 
         path: 'products/add', 
@@ -79,7 +86,15 @@ const router = createBrowserRouter([
       },
       { 
         path: 'products/edit/:id', 
-        element: <RequireAdmin><ProductForm /></RequireAdmin> 
+       element: <RequireAdmin><ProductForm /></RequireAdmin>
+      },
+      { 
+        path: 'orders', 
+        element: <RequireAdmin><AdminOrders /></RequireAdmin>
+      },
+      {
+        path: 'messages',
+        element: <RequireAdmin><AdminMessages /></RequireAdmin>
       },
     ]
   }

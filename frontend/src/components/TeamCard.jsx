@@ -4,7 +4,7 @@ import { FaXTwitter } from "react-icons/fa6";
 
 const TeamCard = ({ image, name, role }) => {
   return (
-    <div className="text-center">
+    <div className="text-center cursor-pointer">
       <img
         src={image}
         alt={name}

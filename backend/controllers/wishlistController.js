@@ -37,3 +37,15 @@ export const removeFromWishlist = async (req, res) => {
     data: user.wishlist,
   });
 };
+
+export const clearWishlist = async (req, res) => {
+  const user = await User.findById(req.userId);
+  user.wishlist = [];
+  await user.save();
+  return jsonResponse(res, {
+    success: true,
+    message: "Wishlist cleared",
+    data: [],
+  });
+};
+

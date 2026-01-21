@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, NavLink } from 'react-router-dom';
 import Api from '../service/Api';
 import { TbTruckDelivery } from "react-icons/tb";
 import { LuRefreshCw } from "react-icons/lu";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
+import { MdLocationOn, MdCheckCircle, MdCancel, MdRefresh } from "react-icons/md";
 import { useCart } from '../context/useCart';
 import { useWishlist } from '../context/useWishlist';
 import SectionTitle from '../UI/SectionTitle';
@@ -13,16 +14,89 @@ import Rating from '../UI/Rating';
 import { useAuth } from '../context/useAuth';
 import { toast } from 'react-toastify';
 
+
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated, setUser } = useAuth();
+  
+  const [pincode, setPincode] = useState('');
+  
+  useEffect(() => {
+    if (user?.pincode) {
+        setPincode(user.pincode);
+    }
+  }, [user]);
+
+  const [deliveryStatus, setDeliveryStatus] = useState(null);
+  const [checkingPincode, setCheckingPincode] = useState(false);
+
+  const checkDelivery = async () => {
+    if (!pincode || pincode.trim() === '') {
+      toast.error("Please enter a pincode");
+      return;
+    }
+    
+    // Remove any spaces and validate
+    const cleanPincode = pincode.trim().replace(/\s/g, '');
+    
+    if (cleanPincode.length !== 6) {
+      toast.error("Please enter a valid 6-digit pincode");
+      return;
+    }
+    
+    if (!/^\d+$/.test(cleanPincode)) {
+      toast.error("Pincode should contain only numbers");
+      return;
+    }
+    
+    setCheckingPincode(true);
+    try {
+        const res = await Api.checkPincode(cleanPincode);
+        if (res.success) {
+            setDeliveryStatus({ 
+              available: res.isDeliverable, 
+              message: res.message, 
+              location: res.location 
+            });
+            setPincode(cleanPincode);
+            
+            if (res.isDeliverable) {
+                toast.success(res.message);
+                if (isAuthenticated && user) {
+                    const updatedUser = { ...user, pincode: cleanPincode };
+                    setUser(updatedUser);
+                    localStorage.setItem('user_info', JSON.stringify(updatedUser));
+                }
+            } else {
+                toast.error(res.message);
+            }
+        } else {
+             setDeliveryStatus({ available: false, message: res.message });
+             toast.error(res.message);
+        }
+    } catch (error) {
+        console.error(error);
+        toast.error(error.message || "Failed to check delivery availability");
+        setDeliveryStatus(null);
+    } finally {
+        setCheckingPincode(false);
+    }
+  };
+
+  const handlePincodeKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      checkDelivery();
+    }
+  };
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [userRating, setUserRating] = useState(0);
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
@@ -36,6 +110,7 @@ const ProductDetails = () => {
           const p = res.data;
           if (!p.title && p.name) p.title = p.name;
           setProduct(p);
+          if (p.images?.length > 0) setSelectedImage(p.images[0]);
           if (p.colors?.length > 0) setSelectedColor(p.colors[0]);
           if (p.sizes?.length > 0) setSelectedSize(p.sizes[0]);
         }
@@ -91,20 +166,46 @@ const ProductDetails = () => {
     }
   };
 
-  const handleToggleWishlist = () => {
-      if (!product) return;
-      if (isInWishlist(product._id)) {
-          removeFromWishlist(product._id);
+  const handleToggleWishlist = async () => {
+    if (!product) return;
+    
+    const prevState = wishlisted;
+    setWishlisted(!prevState);
+
+    try {
+      if (prevState) {
+          await removeFromWishlist(product._id);
+          toast.info("Removed from wishlist");
       } else {
-          addToWishlist(product);
+          await addToWishlist(product);
+          toast.success("Added to wishlist");
       }
+    } catch (error) {
+      setWishlisted(prevState);
+      toast.error("Something went wrong");
+    }
   }
+  
+  const [wishlisted, setWishlisted] = useState(false);
+
+  useEffect(() => {
+    if (product) {
+      setWishlisted(isInWishlist(product._id));
+    }
+  }, [product, isInWishlist]);
 
   if (!product) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-100">
+        <div className="animate-spin rounded-full h-25 w-25 border-b-2 border-red-500"></div>
+        Loading......
+      </div>
+    );
   }
 
+
   return (
+    <>
     <div className="mx-auto max-w-7xl px-4 md:px-6 py-10">
       <div className="flex flex-col md:flex-row gap-10">
      
@@ -112,7 +213,11 @@ const ProductDetails = () => {
           <div className="hidden md:flex flex-col gap-4">
             {product.images && product.images.length > 0 ? (
               product.images.map((img, idx) => (
-                <div key={idx} className="w-24 h-24 bg-gray-100 rounded-md cursor-pointer flex items-center justify-center border border-gray-200 hover:border-black transition-colors">
+                <div 
+                  key={idx} 
+                  onClick={() => setSelectedImage(img)}
+                  className={`w-24 h-24 bg-gray-100 rounded-md cursor-pointer flex items-center justify-center border transition-colors ${selectedImage === img ? 'border-black' : 'border-gray-200 hover:border-black'}`}
+                >
                   <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-20 h-20 object-contain" />
                 </div>
               ))
@@ -122,11 +227,11 @@ const ProductDetails = () => {
                </div>
             )}
           </div>
-          <div className="flex-1 bg-gray-100 rounded-md flex items-center justify-center h-125">
+          <div className="flex-1 bg-gray-100 rounded-md flex items-center justify-center h-125 overflow-hidden">
              <img 
-               src={product.images && product.images.length > 0 ? product.images[0] : '/placeholder.jpg'} 
+               src={selectedImage || (product.images && product.images.length > 0 ? product.images[0] : '/placeholder.jpg')} 
                alt={product.title} 
-               className="w-3/4 max-h-100 object-contain" 
+               className="w-full h-full object-contain" 
                onError={(e) => { e.target.src = '/placeholder.jpg'; }}
              />
           </div>
@@ -224,23 +329,113 @@ const ProductDetails = () => {
                 onClick={handleToggleWishlist}
                 className="border border-gray-300 p-2 rounded hover:bg-gray-100 hover:cursor-pointer" 
               >
-                {isInWishlist(product._id) ? <FaHeart className="w-6 h-6 text-red-500" /> : <CiHeart className="w-6 h-6" />}
+                {wishlisted ? <FaHeart className="w-6 h-6 text-red-500" /> : <CiHeart className="w-6 h-6" />}
               </button>
             </div>
             
-            <div className="border border-gray-300 rounded divide-y divide-gray-300 mt-6">
-              <div className="p-4 flex items-center gap-4">
-                <TbTruckDelivery className="w-8 h-8" />
-                <div>
-                  <h4 className="font-medium">Free Delivery</h4>
-                  <p className="text-xs text-gray-500 underline">Enter your postal code for Delivery Availability</p>
+        
+            <div className="border border-gray-200 rounded-lg mt-6 overflow-hidden bg-linear-to-br from-gray-50 to-white">
+              <div className="p-5">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-red-50 rounded-lg">
+                    <TbTruckDelivery className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-gray-900 mb-1">Check Delivery Availability</h4>
+                    <p className="text-xs text-gray-500 mb-3">Enter your pincode to check if we deliver to your area</p>
+                    
+                    {!deliveryStatus ? (
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="flex-1 relative">
+                          <MdLocationOn className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                          <input 
+                            type="text" 
+                            placeholder="Enter 6-digit pincode" 
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm placeholder:text-gray-400"
+                            value={pincode}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                              setPincode(value);
+                            }}
+                            onKeyPress={handlePincodeKeyPress}
+                            maxLength={6}
+                            disabled={checkingPincode}
+                          />
+                        </div>
+                        <button 
+                          onClick={checkDelivery}
+                          disabled={checkingPincode || !pincode || pincode.length !== 6}
+                          className="px-6 py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm flex items-center justify-center gap-2 min-w-[120px]"
+                        >
+                          {checkingPincode ? (
+                            <>
+                              <LuRefreshCw className="w-4 h-4 animate-spin" />
+                              Checking...
+                            </>
+                          ) : (
+                            <>
+                              <MdCheckCircle className="w-4 h-4" />
+                              Check
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className={`p-4 rounded-lg border-2 ${
+                          deliveryStatus.available 
+                            ? 'bg-green-50 border-green-200' 
+                            : 'bg-red-50 border-red-200'
+                        }`}>
+                          <div className="flex items-start gap-3">
+                            {deliveryStatus.available ? (
+                              <MdCheckCircle className="w-6 h-6 text-green-600 shrink-0 mt-0.5" />
+                            ) : (
+                              <MdCancel className="w-6 h-6 text-red-600 shrink-0 mt-0.5" />
+                            )}
+                            <div className="flex-1">
+                              <p className={`text-sm font-semibold ${
+                                deliveryStatus.available ? 'text-green-800' : 'text-red-800'
+                              }`}>
+                                {deliveryStatus.message}
+                              </p>
+                              {deliveryStatus.available && deliveryStatus.location && (
+                                <div className="mt-2 pt-2 border-t border-green-200">
+                                  <div className="flex items-start gap-2">
+                                    <MdLocationOn className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                                    <div className="text-xs text-green-700">
+                                      <p className="font-medium">{deliveryStatus.location.name}</p>
+                                      <p className="text-green-600">
+                                        {deliveryStatus.location.district}, {deliveryStatus.location.state}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <button 
+                          onClick={() => { 
+                            setDeliveryStatus(null); 
+                            setPincode('');
+                          }}
+                          className="w-full px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                        >
+                          <MdRefresh className="w-4 h-4" />
+                          Check Another Pincode
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
+            </div>
               <div className="p-4 flex items-center gap-4">
                 <LuRefreshCw className="w-8 h-8" />
                 <div>
                   <h4 className="font-medium">Return Delivery</h4>
-                  <p className="text-xs text-gray-500">Free 30 Days Delivery Returns. <span className="underline">Details</span></p>
+                  <p className="text-xs text-gray-500">Free 30 Days Delivery Returns. <span className="underline"><NavLink to='/return-policy'>Details</NavLink></span></p>
                 </div>
               </div>
             </div>
@@ -249,31 +444,32 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      <div className="mt-20">
+      <div className="mt-20 p-5">
         <SectionTitle 
             eyebrow="Related Item" 
             title="Related Products" 
             action={
                 <button 
-                    onClick={() => navigate('/explore')} 
-                    className="text-sm font-medium border border-gray-300 px-8 py-3 rounded hover:bg-gray-100 transition-colors"
+                onClick={() => navigate('/explore')} 
+                className="text-sm font-medium border border-gray-300 px-8 py-3 rounded hover:bg-gray-100 transition-colors cursor-pointer"
                 >
                     View All
                 </button>
             }
-        />
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mx-4 my-5">
           {relatedProducts.map((p) => (
             <ProductCard
-              key={p._id || p.id}
-              product={p}
-              onAddToCart={() => addToCart(p)}
-              onToggleProducts={() => navigate(`/product/${p._id || p.id}`)}
+            key={p._id || p.id}
+            product={p}
+            onAddToCart={() => addToCart(p)}
+            onToggleProducts={() => navigate(`/product/${p._id || p.id}`)}
             />
           ))}
         </div>
       </div>
-    </div>
+ 
+  </>
   );
 };
 

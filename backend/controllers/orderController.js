@@ -105,9 +105,32 @@ export const updateOrderToDelivered = async (req, res) => {
   if (order) {
     order.isDelivered = true;
     order.deliveredAt = Date.now();
+    order.status = 'Delivered';
 
     const updatedOrder = await order.save();
 
+    return jsonResponse(res, updatedOrder);
+  } else {
+    return jsonResponse(res, { message: "Order not found" }, 404);
+  }
+};
+
+export const updateOrderStatus = async (req, res) => {
+  const { status } = req.body;
+  const order = await Order.findById(req.params.id);
+
+  if (order) {
+    order.status = status;
+    
+    if (status === 'Delivered') {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+    } else {
+       // If changing from Delivered to something else, maybe reset isDelivered? 
+       // For now, let's keep it simple. If status is delivered, set isDelivered.
+    }
+
+    const updatedOrder = await order.save();
     return jsonResponse(res, updatedOrder);
   } else {
     return jsonResponse(res, { message: "Order not found" }, 404);

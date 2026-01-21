@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { MdDashboard, MdAddBox, MdLogout, MdMessage } from 'react-icons/md';
+import { MdDashboard, MdAddBox, MdLogout, MdMessage, MdLocationOn } from 'react-icons/md';
 import { FaBox } from 'react-icons/fa';
 
 const AdminLayout = () => {
@@ -78,13 +78,27 @@ const AdminLayout = () => {
             <span className="font-medium">Messages</span>
           </NavLink>
 
+          <NavLink
+            to="/admin/pincodes"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                isActive
+                  ? 'bg-red-50 text-red-500'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`
+            }
+          >
+            <MdLocationOn size={24} />
+            <span className="font-medium">Pincodes</span>
+          </NavLink>
+
           <div className="mt-auto pt-6">
             <button
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors"
+              className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-gray-600 hover:bg-red-50 hover:text-red-500 transition-colors cursor-pointer"
             >
               <MdLogout size={24} />
-              <span className="font-medium">Logout</span>
+              <span className="font-medium ">Logout</span>
             </button>
           </div>
         </nav>

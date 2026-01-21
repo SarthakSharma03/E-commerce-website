@@ -40,8 +40,10 @@ export const WishlistProvider = ({ children }) => {
       if (res.success) {
         setWishlist(res.data);
       }
+      return res;
     } catch (error) {
       console.error("Failed to add to wishlist", error);
+      throw error;
     }
   };
 
@@ -51,8 +53,21 @@ export const WishlistProvider = ({ children }) => {
       if (res.success) {
         setWishlist(res.data);
       }
+      return res;
     } catch (error) {
       console.error("Failed to remove from wishlist", error);
+      throw error;
+    }
+  };
+
+  const clearWishlist = async () => {
+    try {
+      const res = await Api.clearWishlist();
+      if (res.success) {
+        setWishlist([]);
+      }
+    } catch (error) {
+      console.error("Failed to clear wishlist", error);
     }
   };
 
@@ -65,6 +80,7 @@ export const WishlistProvider = ({ children }) => {
       wishlist, 
       addToWishlist, 
       removeFromWishlist, 
+      clearWishlist,
       isInWishlist,
       loading 
     }}>

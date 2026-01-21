@@ -91,6 +91,14 @@ const Api = {
     return await axiosInstance.post('/orders', orderData);
   },
 
+  getAllOrders: async () => {
+    return await axiosInstance.get('/orders');
+  },
+
+  updateOrderStatus: async (orderId, status) => {
+    return await axiosInstance.put(`/orders/${orderId}/status`, { status });
+  },
+
   payOrder: async (orderId, paymentResult) => {
     return await axiosInstance.put(`/orders/${orderId}/pay`, paymentResult);
   },
@@ -120,6 +128,10 @@ const Api = {
     return await axiosInstance.delete(`/wishlist/${productId}`);
   },
 
+  clearWishlist: async () => {
+    return await axiosInstance.delete('/wishlist');
+  },
+
   getWishlist: async () => {
     return await axiosInstance.get('/wishlist');
   },
@@ -145,8 +157,51 @@ const Api = {
     return await axiosInstance.get(`/products/${id}`);
   },
 
+  getAdminProductById: async (id) => {
+    return await axiosInstance.get(`/admin/products/${id}`);
+  },
+
+  getDashboardStats: async () => {
+    return await axiosInstance.get('/admin/products/stats');
+  },
+
+  checkPincode: async (pincode) => {
+    return await axiosInstance.post('/pincode/check', { pincode });
+  },
+
   rateProduct: async (id, rating) => {
     return await axiosInstance.post(`/products/${id}/rate`, { rating });
+  },
+  // Contact Us Endpoint
+  contactUs: async (data) => {
+    return await axiosInstance.post('/contact', data);
+  },
+  
+  // Admin Contact Messages
+  getContacts: async () => {
+    return await axiosInstance.get('/contact');
+  },
+  
+  updateContactStatus: async (id, status) => {
+    return await axiosInstance.put(`/contact/${id}/status`, { status });
+  },
+
+  // Pincode Endpoint
+  checkPincode: async (pincode) => {
+    return await axiosInstance.post('/pincode/check', { pincode });
+  },
+
+  // Admin Pincode Management
+  getAllPincodes: async (params) => {
+    return await axiosInstance.get('/pincode/admin/all', { params });
+  },
+
+  updatePincodeDeliverable: async (id, isDeliverable) => {
+    return await axiosInstance.put(`/pincode/admin/${id}/deliverable`, { isDeliverable });
+  },
+
+  getPincodeStats: async () => {
+    return await axiosInstance.get('/pincode/admin/stats');
   },
 };
 

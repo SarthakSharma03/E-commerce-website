@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { IoMdStarOutline } from "react-icons/io";
 import { IoIosStar } from "react-icons/io";
 
 const Rating = ({ value = 0, onChange, interactive = false }) => {
+  const [hover, setHover] = useState(0);
   const stars = [1, 2, 3, 4, 5];
 
   const handleClick = (star) => {
@@ -10,15 +12,17 @@ const Rating = ({ value = 0, onChange, interactive = false }) => {
   };
 
   return (
-    <div className="flex items-center gap-1 text-yellow-500">
+    <div className="flex items-center gap-1 text-yellow-500 text-2xl">
       {stars.map((s) => (
         <button
           key={s}
           type="button"
           onClick={() => handleClick(s)}
-          className={interactive ? "focus:outline-none cursor-pointer" : "cursor-default"}
+          onMouseEnter={() => interactive && setHover(s)}
+          onMouseLeave={() => interactive && setHover(0)}
+          className={interactive ? "focus:outline-none cursor-pointer transition-transform hover:scale-110" : "cursor-default"}
         >
-          {s <= Math.round(value) ? <IoIosStar /> : <IoMdStarOutline />}
+          {s <= (hover || Math.round(value)) ? <IoIosStar /> : <IoMdStarOutline />}
         </button>
       ))}
     </div>

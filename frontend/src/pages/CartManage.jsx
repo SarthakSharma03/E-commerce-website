@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/useCart';
 import { RxCross2 } from "react-icons/rx";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -21,7 +21,7 @@ const CartManage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
       <div className="text-sm text-gray-500 mb-10">
-        Home / <span className="text-black">Cart</span>
+        <NavLink to='/home' className={`cursor-pointer hover:underline`}>Home</NavLink> / <span className="text-black">Cart</span>
       </div>
 
       <div className="overflow-x-auto gap-6 mb-10">
@@ -125,7 +125,7 @@ const CartManage = () => {
           </div>
           <button 
             onClick={() => navigate('/checkout')}
-            className="w-full bg-red-500 text-white py-3 rounded hover:bg-red-600 transition-colors"
+            className="w-full bg-red-500 text-white py-3 rounded hover:bg-red-600 transition-colors cursor-pointer"
           >
             Process to checkout
           </button>

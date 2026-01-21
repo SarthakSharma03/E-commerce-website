@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    pincode: {
+      type: String,
+      default: '',
+    },
     wishlist: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product'

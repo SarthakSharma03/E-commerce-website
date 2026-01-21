@@ -3,25 +3,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { IoCallOutline } from "react-icons/io5";
 import { BsEnvelope } from "react-icons/bs";
 import { contactSchema } from "../validation/contactValidation";
+import Api from "../service/Api";
+import { toast } from "react-toastify";
+import { NavLink } from "react-router-dom";
 
 const ContactUs = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-7xl mx-auto ">
-         <p className="text-sm text-gray-400 mb-6 pt-5 pb-3.5">
-          Home <span className="mx-1">/</span>
-          <span className="text-gray-700 font-medium">Contact</span>
-        </p>
-
-      
+        <div className="mb-7 ">
+         <span className="text-gray-400 hover:underline cursor-pointer "> <NavLink to='/home'>Home</NavLink></span> / <span className="text-black font-medium">ContactUs</span>
+</div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 bg-white p-8 rounded-lg shadow-sm ">
-        
           <div className="space-y-8">
-         
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 flex items-center justify-center rounded-full bg-red-500 text-white">
                 <IoCallOutline />
-
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Call To Us</h3>
@@ -36,11 +33,9 @@ const ContactUs = () => {
 
             <hr />
 
-          
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 flex items-center justify-center rounded-full bg-red-500 text-white">
-                <BsEnvelope  />
-
+                <BsEnvelope />
               </div>
               <div>
                 <h3 className="font-semibold text-lg mb-1">Write To Us</h3>
@@ -57,7 +52,6 @@ const ContactUs = () => {
             </div>
           </div>
 
-       
           <div className="lg:col-span-2">
             <ContactForm />
           </div>
@@ -86,10 +80,17 @@ const ContactForm = () => {
   });
 
   const onSubmit = async (data) => {
- 
-    console.log("Form Data:", data);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    reset();
+    try {
+      await Api.contactUs(data);
+      toast.success("Message sent successfully");
+      reset();
+    } catch (error) {
+      const message = error?.message || "Failed to send message";
+      const finalMessage = message.includes("Unauthorized")
+        ? "Please login to send a message"
+        : message;
+      toast.error(finalMessage);
+    }
   };
 
   return (

@@ -20,7 +20,7 @@ const ArrivalSection = () => {
           <ArrivalCard
             large
             image={ps5}
-            title="PlayStation 5"
+            title="gaming"
             description="Black and White version of the PS5 coming out on sale."
           />
         </div>
@@ -28,14 +28,14 @@ const ArrivalSection = () => {
         <div className="flex flex-col gap-6">
           <ArrivalCard
             image={womenFashion}
-            title="Women’s Collections"
+            title="Woman’s Fashion"
             description="Featured woman collections that give you another vibe."
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <ArrivalCard
               image={speakers}
-              title="Speakers"
+              title="Electronics"
               description="Amazon wireless speakers"
             />
             <ArrivalCard

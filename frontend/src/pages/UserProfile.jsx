@@ -46,7 +46,13 @@ const UserProfile = () => {
       setUser(prev => ({...prev, ...updatedData}));
   }
 
-  if (loading) return <div className="p-10 text-center">Loading...</div>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-100">
+        <div className="animate-spin rounded-full h-15 w-15 border-b-2 border-red-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10 md:px-10">

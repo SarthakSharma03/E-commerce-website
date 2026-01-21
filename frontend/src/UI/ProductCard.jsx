@@ -97,18 +97,13 @@ const ProductCard = ({
           )}
         </button>
 
-        
-        <button
-          onClick={onToggleProducts}
-          className="absolute right-3 top-14 rounded-full bg-white p-2 shadow hover:bg-gray-50 cursor-pointer"
-        >
-          <FaEye className="h-5 w-5" />
-        </button>
+      
 
         <img
           src={displayImage}
           alt={displayTitle}
-          className="h-44 w-full object-contain p-4"
+           onClick={onToggleProducts}
+          className="h-44 w-full object-contain p-4 cursor-pointer"
         />
 
      

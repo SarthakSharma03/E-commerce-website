@@ -12,18 +12,21 @@ const slides = [
     title: 'Up to 10% off Voucher',
     subtitle: 'iPhone 14 Series',
     image: iphone17,
+    category: 'Electronics'
   },
   {
     id: 2,
     title: 'Big Deals on Electronics',
     subtitle: 'New Arrivals',
     image: iphone16,
+     category: 'Men’s Fashion'
   },
   {
     id: 3,
     title: 'Latest Apple Products',
     subtitle: 'Shop Now',
     image: iphone15,
+     category: 'HomeandLifestyle'
   },
 ]
 
@@ -94,12 +97,16 @@ const navigate = useNavigate();
               <h1 className="mb-6 text-3xl md:text-5xl font-bold leading-tight">
                 {slides[current].title}
               </h1>
-              <button
-                onClick={() => navigate('/explore')}
-                className="group flex items-center gap-2 text-base font-medium underline cursor-pointer hover:text-gray-300 transition-colors mx-auto md:mx-0"
-              >
-                Shop Now <FaChevronRight className="text-sm group-hover:translate-x-1 transition-transform" />
-              </button>
+            <button
+  onClick={() =>
+    navigate(`/explore?category=${encodeURIComponent(slides[current].category)}`)
+  }
+  className="group flex items-center gap-2 text-base font-medium underline cursor-pointer hover:text-gray-300 transition-colors mx-auto md:mx-0 text-white"
+>
+  Shop Now
+  <FaChevronRight className="text-sm group-hover:translate-x-1 transition-transform" />
+</button>
+
             </div>
 
             <div className="flex-1 flex justify-center items-center relative">

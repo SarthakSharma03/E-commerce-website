@@ -185,7 +185,7 @@ const SignupForm = () => {
             <button
               type="button"
               onClick={() => navigate('/admin/login')}
-              className="text-xs md:text-sm font-medium text-red-500 hover:underline"
+              className="text-xs md:text-sm   font-medium text-red-500 hover:underline cursor-pointer "
             >
               Admin? Go to admin login
             </button>

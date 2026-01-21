@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
 
 connectDB().then(async () => {
   await adminInitialize();
-  startCronJobs(); // Start the cron jobs
+  startCronJobs(); 
   app.listen(PORT,()=>{
     console.log(`Server running on @ PORT:${PORT}`);
   })

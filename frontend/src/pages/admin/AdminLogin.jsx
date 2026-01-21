@@ -60,7 +60,7 @@ const AdminLogin = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 cursor-pointer"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
@@ -70,17 +70,26 @@ const AdminLogin = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-red-500 text-white py-2 rounded-lg font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+            className="w-full bg-red-500 text-white py-2 rounded-lg font-medium hover:bg-red-600 transition-colors disabled:opacity-50 cursor-pointer"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
         <div className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          Don't have an account?
           <Link to="/admin/signup" className="text-red-500 hover:underline">
             Sign up
           </Link>
         </div>
+       <div className="flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => navigate('/auth/login')}
+              className="text-xs md:text-sm font-medium text-red-500 hover:underline cursor-pointer"
+            >
+              user Login
+            </button>
+          </div>
       </div>
     </div>
   );

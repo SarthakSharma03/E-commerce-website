@@ -193,7 +193,7 @@ const MyOrders = () => {
                         <p className="text-xs uppercase tracking-wide text-gray-400 mb-3">
                           Items in this order
                         </p>
-                        <div className="flex gap-3 overflow-x-auto pb-3 ">
+                        <div className="flex gap-3 overflow-x-auto pb-3 max-w-50 ">
                           {orderItems.map((item, idx) => {
                             const product = item.product || {};
                             const image =

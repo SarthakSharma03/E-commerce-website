@@ -29,6 +29,7 @@ import Dashboard from './pages/admin/Dashboard.jsx';
 import ProductForm from './pages/admin/ProductForm.jsx';
 import AdminOrders from './pages/admin/AdminOrders.jsx';
 import AdminMessages from './pages/admin/AdminMessages.jsx';
+import AdminPincodes from './pages/admin/AdminPincodes.jsx';
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import ReturnPolicy from './pages/ReturnPolicy'
 import TermsOfUse from './pages/TermsOfUse'
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
       {
         path: 'messages',
         element: <RequireAdmin><AdminMessages /></RequireAdmin>
+      },
+      {
+        path: 'pincodes',
+        element: <RequireAdmin><AdminPincodes /></RequireAdmin>
       },
     ]
   }

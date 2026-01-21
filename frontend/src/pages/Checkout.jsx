@@ -1,6 +1,6 @@
 import  { useState } from 'react';
 import { useCart } from '../context/useCart';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Api from '../service/Api';
 import AddressForm from '../components/checkout/AddressForm';
 import OrderSummary from '../components/checkout/OrderSummary';
@@ -63,7 +63,7 @@ const Checkout = () => {
     };
 
     try {
-      // 1. Create Order
+     
       const response = await Api.createOrder(orderData);
       
       if (!response || (!response._id && !response.id)) {
@@ -73,10 +73,10 @@ const Checkout = () => {
       const orderId = response._id || response.id;
       clearCart();
 
-      // 2. Handle Payment
+     
       if (data.paymentMethod === 'Credit Card') {
          try {
-            // Simulate Payment Delay
+          
             await new Promise(resolve => setTimeout(resolve, 1500));
             
             const paymentResult = {
@@ -126,7 +126,7 @@ const Checkout = () => {
       <CheckoutSteps currentStep={selectedPaymentMethod === 'Credit Card' ? 2 : 1} />
       
       <div className="text-sm text-gray-500 mb-8">
-        Home / Cart / <span className="text-black">Checkout</span>
+        <NavLink to='/home' className={`cursor-pointer hover:underline`}>Home</NavLink> / <NavLink to='/cartManage' className={`cursor-pointer hover:underline`}>Cart</NavLink>  / <span className="text-black">Checkout</span>
       </div>
       <h2 className="text-3xl font-medium mb-8">Billing Details</h2>
 
@@ -135,7 +135,7 @@ const Checkout = () => {
           <AddressForm register={register} errors={errors} />
         </div>
         
-        <div className="w-full lg:w-[400px]">
+        <div className="w-full lg:w-100">
           <OrderSummary cartItems={cartItems} totalAmount={totalAmount} />
           
           <div className="mt-8">
@@ -158,12 +158,11 @@ const Checkout = () => {
                  </div>
                </label>
                
-               {/* Show Form inline if CC selected */}
                {selectedPaymentMethod === 'Credit Card' && (
                   <CreditCardForm register={register} errors={errors} />
                )}
 
-               {/* Bank / UPI Option */}
+               
                <label className={`flex items-center justify-between p-4 border rounded cursor-pointer transition-all ${selectedPaymentMethod === 'UPI' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
                  <div className="flex items-center gap-3">
                    <input 
@@ -179,7 +178,7 @@ const Checkout = () => {
                  </div>
                </label>
 
-               {/* COD Option */}
+           
                <label className={`flex items-center justify-between p-4 border rounded cursor-pointer transition-all ${selectedPaymentMethod === 'Cash on Delivery' ? 'border-black bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}>
                  <div className="flex items-center gap-3">
                    <input 

@@ -105,7 +105,15 @@ const Explore = () => {
     for (let i = start; i <= end; i++) pages.push(i);
     return pages;
   };
+    if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-100">
+        <div className="animate-spin rounded-full h-15 w-15 border-b-2 border-red-500"></div>
+      </div>
+    );
+  }
 
+  
   return (
     <div className="max-w-7xl mx-auto px-4 md:px-6 py-10">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
@@ -125,23 +133,8 @@ const Explore = () => {
               size={20}
             />
           </div>
-
-        {filters.category && (
-          <div className="flex items-center gap-2">
-            <span className="text-sm px-3 py-2 border rounded bg-gray-50">
-              Category: {filters.category}
-            </span>
-            <button
-              onClick={() =>
-                setFilters((prev) => ({ ...prev, category: "", page: 1 }))
-              }
-              className="text-sm text-red-500 hover:underline cursor-pointer"
-            >
-              Clear
-            </button>
-          </div>
-        )}
-
+          
+       
           <select
             value={filters.sort}
             onChange={(e) =>
@@ -170,6 +163,22 @@ const Explore = () => {
             }
             className="border rounded px-4 py-2 bg-white focus:border-red-500 hover:cursor-pointer"
           >
+         
+                  {filters.category && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm px-3 py-2 border rounded bg-gray-50">
+              Category: {filters.category}
+            </span>
+            <button
+              onClick={() =>
+                setFilters((prev) => ({ ...prev, category: "", page: 1 }))
+              }
+              className="text-sm text-red-500 hover:underline cursor-pointer"
+            >
+              Clear
+            </button>
+          </div>
+        )}
             <option value="">Category</option>
             <option value="computer">computer</option>
             <option value="phone">phone</option>
@@ -177,6 +186,15 @@ const Explore = () => {
             <option value="headphone">Headphone</option>
             <option value="camera">Camera</option>
             <option value="gaming">Gaming</option>
+            <option value="Woman’s Fashion">Woman’s Fashion</option>
+            <option value="Men’s Fashion">Men’s Fashion</option>
+            <option value="Electronics">Electronics</option>
+            <option value="HomeandLifestyle">Home & Lifestyle</option>
+            <option value="Medicine">Medicine</option>
+            <option value="SportsandOutdoor">Sports & Outdoor</option>
+            <option value="Baby’s Toys">Baby’s & Toys</option>
+            <option value="GroceriesandPets">Groceries & Pets</option>
+
           </select>
         </div>
       </div>

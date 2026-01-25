@@ -14,8 +14,8 @@ router.use(auth)
 
 router.get('/stats', isAdmin, asyncWrapper(getDashboardStats));
 
-router.post('/' ,isAdmin , upload.array("image",5),validateBody(productSchema),asyncWrapper(createProduct));
-router.put('/:id', isAdmin, upload.array("image",5), asyncWrapper(updateProduct));
+router.post('/' ,isAdmin ,validateBody(productSchema),asyncWrapper(createProduct));
+router.put('/:id', isAdmin, asyncWrapper(updateProduct));
 router.delete('/:id', isAdmin, asyncWrapper(deleteProduct));
 
 router.get('/', isAdmin, asyncWrapper(getProducts));

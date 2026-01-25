@@ -186,11 +186,6 @@ const Api = {
     return await axiosInstance.put(`/contact/${id}/status`, { status });
   },
 
-  // Pincode Endpoint
-  checkPincode: async (pincode) => {
-    return await axiosInstance.post('/pincode/check', { pincode });
-  },
-
   // Admin Pincode Management
   getAllPincodes: async (params) => {
     return await axiosInstance.get('/pincode/admin/all', { params });

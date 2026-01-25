@@ -3,14 +3,10 @@ import { jsonResponse } from "../middleware/jsonResponse.js";
 
 export const createProduct = async (req, res) => {
   const productData = req.body;
-  const domain = process.env.SERVER_DOMAIN || 'http://localhost:3000';
- 
-  const imagePaths = req.files.map((item) => {
-    return (
-      domain + "/uploads" + "/productImage/" + item.filename
-    );
-  });
-  productData.images = imagePaths;
+  // Images are now passed as URLs in req.body.images
+  // If no images provided, ensure it is an empty array
+  productData.images = productData.images || [];
+
   const product = await Product.create(productData); 
   return jsonResponse(res, { success: true, data: product }, 201);
 };
@@ -18,27 +14,17 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   const updates = { ...req.body };
   const { id } = req.params;
-  const domain = process.env.SERVER_DOMAIN || 'http://localhost:3000';
 
-  delete updates.images;
-  let newImages = [];
-  if (req.files && req.files.length > 0) {
-    newImages = req.files.map((item) => {
-      return (
-        domain +
-        "/uploads" +
-        "/productImage/" +
-        item.filename
-      );
-    });
+  // Handle images if provided
+  if (updates.images) {
+    // updates.images is already an array of URLs
+  } else {
+    // If images not present in body, don't update them (or set to empty if intentional?)
+    // Usually PUT might mean full replace, but here we treat it as PATCH-like or partial update
+    delete updates.images;
   }
 
-  const updateQuery = { $set: updates };
-  if (newImages.length > 0) {
-    updateQuery.$push = { images: { $each: newImages } };
-  }
-
-  const product = await Product.findByIdAndUpdate(id, updateQuery, {
+  const product = await Product.findByIdAndUpdate(id, { $set: updates }, {
     new: true,
     runValidators: true,
   });

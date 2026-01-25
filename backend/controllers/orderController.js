@@ -32,6 +32,18 @@ export const addOrderItems = async (req, res) => {
     return jsonResponse(res, { message: "No order items" }, 400);
   }
 
+  for (const item of orderItems) {
+    const product = await Product.findById(item.product);
+    if (!product) {
+      return jsonResponse(res, { message: `Product not found: ${item.product}` }, 404);
+    }
+    if (product.stock < item.qty) {
+      return jsonResponse(res, { 
+        message: `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.qty}` 
+      }, 400);
+    }
+  }
+
   const orderId = uuidv4();
 
   const order = new Order({
@@ -79,9 +91,29 @@ export const getOrderById = async (req, res) => {
 };
 
 export const updateOrderToPaid = async (req, res) => {
-  const order = await Order.findById(req.params.id);
+  try {
+    const order = await Order.findById(req.params.id).populate('orderItems.product');
 
-  if (order) {
+    if (!order) {
+      return jsonResponse(res, { message: "Order not found" }, 404);
+    }
+
+    // Only reduce stock if order is not already paid
+    if (!order.isPaid) {
+      for (const item of order.orderItems) {
+        const product = await Product.findById(item.product._id || item.product);
+        if (product) {
+          if (product.stock < item.qty) {
+            return jsonResponse(res, { 
+              message: `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.qty}` 
+            }, 400);
+          }
+          product.stock -= item.qty;
+          await product.save();
+        }
+      }
+    }
+
     order.isPaid = true;
     order.paidAt = Date.now();
     order.paymentResult = {
@@ -92,10 +124,10 @@ export const updateOrderToPaid = async (req, res) => {
     };
 
     const updatedOrder = await order.save();
-
     return jsonResponse(res, updatedOrder);
-  } else {
-    return jsonResponse(res, { message: "Order not found" }, 404);
+  } catch (error) {
+    console.error("Update order to paid error:", error);
+    return jsonResponse(res, { message: error.message || "Failed to update order" }, 500);
   }
 };
 
@@ -214,7 +246,9 @@ export const verifyPayment = async (req, res) => {
         return jsonResponse(res, { message: "Order ID is required" }, 400);
     }
 
-    const order = await Order.findOne({ orderId: idToVerify }).populate('user', 'email');
+    const order = await Order.findOne({ orderId: idToVerify })
+      .populate('user', 'email')
+      .populate('orderItems.product');
 
     if (!order) {
       return jsonResponse(res, { message: "Order not found" }, 404);
@@ -227,6 +261,23 @@ export const verifyPayment = async (req, res) => {
     const successfulPayment = response.data.find(payment => payment.payment_status === "SUCCESS");
 
     if (successfulPayment) {
+      // Only reduce stock if order is not already paid
+      if (!order.isPaid) {
+        // Reduce stock for each product in the order
+        for (const item of order.orderItems) {
+          const product = await Product.findById(item.product._id || item.product);
+          if (product) {
+            if (product.stock < item.qty) {
+              return jsonResponse(res, { 
+                message: `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.qty}` 
+              }, 400);
+            }
+            product.stock -= item.qty;
+            await product.save();
+          }
+        }
+      }
+
       order.isPaid = true;
       order.paidAt = Date.now();
       order.paymentResult = {

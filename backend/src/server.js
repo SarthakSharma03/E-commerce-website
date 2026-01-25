@@ -2,6 +2,7 @@ import express from 'express'
 import path from 'path'
 import cors from 'cors'
 import {config as envConfig} from 'dotenv'
+import { fileURLToPath } from 'url'
 import  connectDB from '../config/db.js'
 import authRoute from '../routes/authRoute.js'
 import adminRoute from '../routes/adminRoute.js'
@@ -15,13 +16,17 @@ import { jsonResponse } from '../middleware/jsonResponse.js'
 import adminInitialize from '../utils/adminInitialize.js'
 import { startCronJobs } from '../utils/cronJobs.js'
 
-envConfig()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+
+envConfig({ path: path.join(__dirname, '../../.env') })
 
 const app=express()
 const PORT=process.env.PORT || 3000
 
 app.use(cors())
-app.use("/uploads", express.static(path.join("uploads")));
+app.use("/uploads", express.static(path.join(__dirname, '../../uploads')));
 
 app.use(express.json())
 

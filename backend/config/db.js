@@ -1,48 +1,26 @@
-import mongoose from 'mongoose'
-import  {config as envConfig} from 'dotenv'
-import { MongoMemoryServer } from 'mongodb-memory-server'
-envConfig()
+import mongoose from "mongoose"
+import { config as envConfig } from "dotenv"
 
-let memoryServer = null
+envConfig()
 
 const connectDB = async () => {
   try {
     const uri = process.env.MONGO_URI
-    const shouldUseMemoryDb =
-      process.env.USE_MEMORY_DB === 'true' || process.env.NODE_ENV !== 'production'
 
-    if (!uri && !shouldUseMemoryDb) {
-      throw new Error("MONGO_URI is not defined in environment variables");
+    if (!uri) {
+      throw new Error("MONGO_URI is not defined in .env file")
     }
 
-    if (!uri && shouldUseMemoryDb) {
-      memoryServer = await MongoMemoryServer.create()
-      const memoryUri = memoryServer.getUri()
-      await mongoose.connect(memoryUri)
-      console.log("MongoDB Connected (in-memory)")
-      return
-    }
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000,
+    })
 
-    try {
-      await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 })
-      console.log("MongoDB Connected Successfully")
-      return
-    } catch (error) {
-      if (!shouldUseMemoryDb) throw error
-
-      console.error("MongoDB connection failed:", error.message)
-      console.warn("Falling back to in-memory MongoDB for local development.")
-      memoryServer = await MongoMemoryServer.create()
-      const memoryUri = memoryServer.getUri()
-      await mongoose.connect(memoryUri)
-      console.log("MongoDB Connected (in-memory)")
-      return
-    }
+    console.log("✅ MongoDB Atlas Connected Successfully")
   } catch (error) {
-    console.error("MongoDB connection failed:", error.message);
-    console.error("Please check your .env file and MongoDB Atlas IP Whitelist settings.");
-    process.exit(1);
+    console.error("❌ MongoDB Atlas connection failed")
+    console.error(error.message)
+    process.exit(1) // STOP APP — no fallback
   }
-};
+}
 
 export default connectDB

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import Api from '../../service/Api';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import Api from "../../service/Api";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaBoxOpen,
   FaShippingFast,
@@ -10,7 +10,7 @@ import {
   FaChevronRight,
   FaCalendarAlt,
   FaMoneyBillWave,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -21,12 +21,12 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       try {
         const response = await Api.getMyOrders();
-       
+
         const orderData = Array.isArray(response)
           ? response
           : response?.data && Array.isArray(response.data)
-          ? response.data
-          : [];
+            ? response.data
+            : [];
         setOrders(orderData);
       } catch (error) {
         console.error("Failed to fetch orders:", error);
@@ -41,26 +41,26 @@ const MyOrders = () => {
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'delivered':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'shipped':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'cancelled':
-      case 'canceled':
-        return 'bg-red-100 text-red-700 border-red-200';
+      case "delivered":
+        return "bg-green-100 text-green-700 border-green-200";
+      case "shipped":
+        return "bg-blue-100 text-blue-700 border-blue-200";
+      case "cancelled":
+      case "canceled":
+        return "bg-red-100 text-red-700 border-red-200";
       default:
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        return "bg-yellow-100 text-yellow-700 border-yellow-200";
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
-      case 'delivered':
+      case "delivered":
         return <FaCheckCircle className="mr-1.5" />;
-      case 'shipped':
+      case "shipped":
         return <FaShippingFast className="mr-1.5" />;
-      case 'cancelled':
-      case 'canceled':
+      case "cancelled":
+      case "canceled":
         return <FaTimesCircle className="mr-1.5" />;
       default:
         return <FaBoxOpen className="mr-1.5" />;
@@ -87,7 +87,7 @@ const MyOrders = () => {
           Looks like you haven't made any orders yet. Explore our collection!
         </p>
         <button
-          onClick={() => navigate('/products')}
+          onClick={() => navigate("/products")}
           className="bg-red-600 text-white px-8 py-3 rounded-full font-medium shadow-lg shadow-red-200 hover:bg-red-700 hover:shadow-xl transition-all transform hover:-translate-y-0.5"
         >
           Start Shopping
@@ -115,74 +115,90 @@ const MyOrders = () => {
         </div>
         <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-1.5 text-xs font-medium text-gray-700 shadow-sm">
           <span className="mr-2 h-2 w-2 rounded-full bg-green-500" />
-          {orders.length} {orders.length === 1 ? 'order' : 'orders'}
+          {orders.length} {orders.length === 1 ? "order" : "orders"}
         </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {orders.map((order) => {
-          const orderItems = Array.isArray(order.orderItems) ? order.orderItems : [];
-          const totalItems = orderItems.reduce((sum, item) => sum + (Number(item?.qty) || 0), 0);
+          const orderItems = Array.isArray(order.orderItems)
+            ? order.orderItems
+            : [];
+          const totalItems = orderItems.reduce(
+            (sum, item) => sum + (Number(item?.qty) || 0),
+            0,
+          );
 
           const itemsPrice =
             order.itemsPrice ||
-            order.totalPrice - (Number(order.shippingPrice) || 0) - (Number(order.taxPrice) || 0) ||
+            order.totalPrice -
+              (Number(order.shippingPrice) || 0) -
+              (Number(order.taxPrice) || 0) ||
             0;
 
-          const status = order.status || 'Pending';
+          const status = order.status || "Pending";
 
           const rawOrderId =
             (order.orderId && String(order.orderId)) ||
             (order._id && String(order._id)) ||
-            '';
+            "";
           const displayOrderId =
-            rawOrderId.length > 20 ? `${rawOrderId.slice(0, 16)}...` : rawOrderId;
+            rawOrderId.length > 20
+              ? `${rawOrderId.slice(0, 16)}...`
+              : rawOrderId;
 
           return (
             <div
-              key={order._id || order.orderId || Math.random().toString(36).slice(2)}
+              key={
+                order._id ||
+                order.orderId ||
+                Math.random().toString(36).slice(2)
+              }
               className="relative flex flex-col bg-white/90 border border-gray-100 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden hover:-translate-y-1.5 hover:scale-[1.01] backdrop-blur-sm"
             >
               <div className="bg-gray-200 px-6 py-4 flex flex-col md:flex-row justify-between md:items-center gap-4 border-b border-gray-100">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
                   <div className="flex items-center text-gray-900 font-semibold max-w-xs md:max-w-sm overflow-hidden">
-                    <span className="text-gray-500 font-normal mr-2 whitespace-nowrap">OrderId:</span>
-                    <span className="truncate">
-                      #{displayOrderId || '—'}
+                    <span className="text-gray-500 font-normal mr-2 whitespace-nowrap">
+                      OrderId:
                     </span>
+                    <span className="truncate">#{displayOrderId || "—"}</span>
                   </div>
                   <div className="flex items-center text-gray-500 text-xs sm:text-sm">
                     <FaCalendarAlt className="mr-2 text-gray-400" />
                     {order.createdAt
-                      ? new Date(order.createdAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
+                      ? new Date(order.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
                         })
-                      : '—'}
+                      : "—"}
                   </div>
                 </div>
 
                 <div
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px]  font-medium border ${getStatusColor(
-                    status
-                  )} whitespace-nowrap`}
+                  className={`
+    inline-flex items-center gap-1 px-2 py-0.5 sm:px-2.5 sm:py-0.5 md:px-3 md:py-1 lg:px-3.5 lg:py-1 rounded-full text-[10px] sm:text-[11px] md:text-xs lg:text-sm font-medium border whitespace-nowrap
+    ${getStatusColor(status)}
+  `}
                 >
-                  {getStatusIcon(status)}
-                  {status}
+                  <span className="text-[10px] sm:text-[11px] md:text-xs lg:text-sm">
+                    {getStatusIcon(status)}
+                  </span>
+                  <span>{status}</span>
                 </div>
               </div>
 
               <div className="p-4">
-                <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
-                  <div className="flex-1">
+                <div className="flex flex-col  lg:flex-row gap-6 lg:gap-10">
+                  <div className=" w-[50%]">
                     <div className="flex items-center justify-between mb-4">
                       <div>
                         <p className="text-xs uppercase tracking-wide text-gray-400">
                           Order details
                         </p>
                         <p className="mt-1 text-sm text-gray-700">
-                          {totalItems} {totalItems === 1 ? 'item' : 'items'} •{' '}
+                          {totalItems} {totalItems === 1 ? "item" : "items"} •{" "}
                           {status}
                         </p>
                       </div>
@@ -190,46 +206,60 @@ const MyOrders = () => {
 
                     {orderItems.length > 0 ? (
                       <div className="mt-4">
-                        <p className="text-xs uppercase tracking-wide text-gray-400 mb-3">
-                          Items in this order
-                        </p>
-                        <div className="flex gap-3 overflow-x-auto pb-3 max-w-50 ">
-                          {orderItems.map((item, idx) => {
-                            const product = item.product || {};
-                            const image =
-                              (Array.isArray(product.images) && product.images[0]) ||
-                              product.image ||
-                              '/placeholder.jpg';
-                            const name = product.name || item.name || 'Product';
+  <p className="text-xs uppercase tracking-wide text-gray-400 mb-3">
+    Items in this order
+  </p>
 
-                            return (
-                              <div
-                                key={item._id || item.product?._id || idx}
-                                className="min-w-35 max-w-40  relative overflow-hidden  rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow shrink-0 snap-start "
-                              >
-                                <div className="w-full h-28 bg-gray-50 flex items-center justify-center overflow-hidden">
-                                  <img  
-                                    src={image}
-                                    alt={name}
-                                    className="max-h-full object-contain group-hover:scale-105 transition-transform"
-                                    onError={(e) => (e.target.src = '/placeholder.jpg')}
-                                  />
-                                </div>
-                                <div className="px-3 py-2 border-t border-gray-100">
-                                  <p className="text-xs font-medium text-gray-900 line-clamp-2">
-                                    {name}
-                                  </p>
-                                  <p className="text-[11px] text-gray-500 mt-1">
-                                    Qty: {item.qty || 1}
-                                  </p>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
+  <div
+ className="flex  gap-4 overflow-auto"
+
+
+  >
+    {orderItems.map((item, idx) => {
+      const product = item.product || {};
+      const image =
+        (Array.isArray(product.images) && product.images[0]) ||
+        product.image;
+      const name = product.name || item.name || "Product";
+
+      return (
+        <div
+          key={item._id || item.product?._id || idx}
+          className="
+            min-w-35 
+            snap-start
+            relative overflow-hidden rounded-xl border
+            border-gray-200 bg-white shadow-sm
+            hover:shadow-md transition-shadow
+          "
+        >
+          <div className="w-full h-28 bg-gray-50 flex items-center justify-center overflow-hidden">
+            <img
+              src={image}
+              alt={name}
+              className="max-h-full object-contain transition-transform"
+              onError={(e) => (e.target.src = '/placeholder.jpg')}
+            />
+          </div>
+
+          <div className="px-3 py-2 border-t border-gray-100">
+            <p className="text-xs font-medium text-gray-900 line-clamp-2">
+              {name}
+            </p>
+            <p className="text-[11px] text-gray-500 mt-1">
+              Qty: {item.qty || 1}
+            </p>
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
                     ) : (
-                      <p className="text-sm text-gray-500 mt-4">No items found in this order</p>
+                      <p className="text-sm text-gray-500 mt-4">
+                        No items found in this order
+                      </p>
                     )}
                   </div>
 
@@ -239,7 +269,7 @@ const MyOrders = () => {
                         <span>Payment</span>
                         <span className="flex items-center text-xs text-gray-700">
                           <FaMoneyBillWave className="mr-1 text-green-500" />
-                          {order.paymentMethod || 'Unknown'}
+                          {order.paymentMethod || "Unknown"}
                         </span>
                       </div>
                       <div className="flex justify-between text-gray-600">
@@ -248,8 +278,14 @@ const MyOrders = () => {
                       </div>
                       <div className="flex justify-between text-gray-600">
                         <span>Shipping</span>
-                        <span className={order.shippingPrice > 0 ? '' : 'text-green-600'}>
-                          {order.shippingPrice > 0 ? `₹${order.shippingPrice}` : 'Free'}
+                        <span
+                          className={
+                            order.shippingPrice > 0 ? "" : "text-green-600"
+                          }
+                        >
+                          {order.shippingPrice > 0
+                            ? `₹${order.shippingPrice}`
+                            : "Free"}
                         </span>
                       </div>
                       {(order.taxPrice || 0) > 0 && (
@@ -259,7 +295,9 @@ const MyOrders = () => {
                         </div>
                       )}
                       <div className="pt-4 border-t border-gray-200 flex justify-between items-center text-lg">
-                        <span className="font-semibold text-gray-900">Total</span>
+                        <span className="font-semibold text-gray-900">
+                          Total
+                        </span>
                         <span className="font-bold text-red-600">
                           ₹{(Number(order.totalPrice) || 0).toFixed(2)}
                         </span>

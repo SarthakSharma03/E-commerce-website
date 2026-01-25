@@ -101,6 +101,24 @@ const ProductDetails = () => {
   const [userRating, setUserRating] = useState(0);
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
+  // Update quantity when product stock changes
+  useEffect(() => {
+    if (product && product.stock !== undefined) {
+      if (product.stock === 0) {
+        setQuantity(0);
+      } else {
+        // If current quantity exceeds stock, adjust it
+        const currentQty = quantity;
+        if (currentQty > product.stock) {
+          setQuantity(product.stock);
+        } else if (currentQty === 0) {
+          setQuantity(1);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product]);
+
   useEffect(() => {
     const controller = new AbortController();
     const fetchProduct = async () => {
@@ -259,6 +277,32 @@ const ProductDetails = () => {
           </div>
           <div className="text-xl font-medium">${product.price}</div>
           <div className="text-l font-medium">Category : {product.category}</div>
+          
+          {/* Stock Display Section */}
+          <div className="flex items-center gap-3 py-2">
+            <span className="text-lg font-medium">Stock:</span>
+            {product.stock > 0 ? (
+              <div className="flex items-center gap-2">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  product.stock > 10 
+                    ? 'bg-green-100 text-green-800' 
+                    : product.stock > 5 
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-orange-100 text-orange-800'
+                }`}>
+                  {product.stock} {product.stock === 1 ? 'item' : 'items'} available
+                </span>
+                {product.stock <= 5 && (
+                  <span className="text-xs text-orange-600 font-medium">Low stock!</span>
+                )}
+              </div>
+            ) : (
+              <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                Out of Stock
+              </span>
+            )}
+          </div>
+          
           <p className="text-sm text-gray-600 border-b pb-6 border-gray-300">
             {product.description}
           </p>
@@ -302,14 +346,16 @@ const ProductDetails = () => {
                <div className="flex items-center border border-gray-300 rounded">
                  <button 
                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                   className="px-3 py-2 border-r border-gray-300 hover:bg-red-500 hover:text-white transition-colors hover:cursor-pointer"
+                   disabled={product.stock === 0}
+                   className="px-3 py-2 border-r border-gray-300 hover:bg-red-500 hover:text-white transition-colors hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                    -
                  </button>
                  <span className="px-6 py-2 font-medium w-12 text-center">{quantity}</span>
                  <button 
-                   onClick={() => setQuantity(quantity + 1)}
-                   className="px-3 py-2 border-l border-gray-300 hover:bg-red-500 hover:text-white transition-colors hover:cursor-pointer"
+                   onClick={() => setQuantity(Math.min((product.stock || 0), quantity + 1))}
+                   disabled={product.stock === 0 || quantity >= (product.stock || 0)}
+                   className="px-3 py-2 border-l border-gray-300 hover:bg-red-500 hover:text-white transition-colors hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                    +
                  </button>
@@ -317,12 +363,22 @@ const ProductDetails = () => {
                
                <button 
                  onClick={() => {
+                   if (product.stock === 0) {
+                     toast.error('Product is out of stock');
+                     return;
+                   }
+                   if (quantity > (product.stock || 0)) {
+                     toast.error(`Only ${product.stock} items available in stock`);
+                     setQuantity(product.stock);
+                     return;
+                   }
                    addToCart(product, quantity);
                    navigate('/cartManage');
                  }}
-                 className="flex-1 bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600 transition-colors"
+                 disabled={product.stock === 0}
+                 className="flex-1 bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                >
-                 Buy Now
+                 {product.stock === 0 ? 'Out of Stock' : 'Buy Now'}
                </button>
                
                <button 

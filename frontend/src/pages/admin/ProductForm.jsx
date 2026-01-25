@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Api from '../../service/Api';
 import { toast } from 'react-toastify';
 import { MdCloudUpload, MdDelete } from 'react-icons/md';
+import uploadImage from '../../utils/cloudinary';
 
 const ProductForm = () => {
   const { id } = useParams();
@@ -67,28 +68,38 @@ const ProductForm = () => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const removeExistingImage = (index) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const data = new FormData();
-    Object.keys(formData).forEach((key) => {
-      if ((key === 'oldPrice' || key === 'discount') && formData[key] === '') {
-        data.append(key, 0);
-      } else {
-        data.append(key, formData[key]);
-      }
-    });
-    images.forEach((image) => {
-      data.append('image', image);
-    });
-
     try {
+      // Upload new images to Cloudinary
+      const uploadedImageUrls = await Promise.all(
+        images.map(async (image) => {
+          return await uploadImage(image);
+        })
+      );
+
+      const allImages = [...existingImages, ...uploadedImageUrls];
+
+      const productData = {
+        ...formData,
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        oldPrice: formData.oldPrice ? Number(formData.oldPrice) : 0,
+        discount: formData.discount ? Number(formData.discount) : 0,
+        images: allImages,
+      };
+
       if (isEditMode) {
-        await Api.updateProduct(id, data);
+        await Api.updateProduct(id, productData);
         toast.success('Product updated successfully');
       } else {
-        await Api.createProduct(data);
+        await Api.createProduct(productData);
         toast.success('Product created successfully');
       }
       navigate('/admin/dashboard');
@@ -228,9 +239,16 @@ const ProductForm = () => {
           <div className="mt-4 flex flex-wrap gap-4">
          
             {existingImages.map((img, index) => (
-              <div key={`existing-${index}`} className="relative w-24 h-24 border rounded overflow-hidden">
+              <div key={`existing-${index}`} className="relative w-24 h-24 border rounded overflow-hidden group">
                 <img src={img} alt="Product" className="w-full h-full object-cover" />
                 <span className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 text-center">Existing</span>
+                <button
+                  type="button"
+                  onClick={() => removeExistingImage(index)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <MdDelete size={14} />
+                </button>
               </div>
             ))}
             

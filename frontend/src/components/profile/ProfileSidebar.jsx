@@ -3,25 +3,13 @@ import { NavLink } from 'react-router-dom';
 const ProfileSidebar = ({ active }) => {
   const sidebarItems = [
     {
-      title: 'Manage My Account',
+      title: '',
       links: [
         { label: 'My Profile', to: '/userProfile?tab=profile', active: active === 'profile' || !active },
-        { label: 'Address Book', to: '#', active: active === 'address' }, 
-        { label: 'My Payment Options', to: '#', active: active === 'payment' } 
+        { label: 'My Orders', to: '/userProfile?tab=orders', active: active === 'orders' }
       ]
-    },
-    {
-      title: 'My Orders',
-      links: [
-        { label: 'My Orders', to: '/userProfile?tab=orders', active: active === 'orders' },
-        { label: 'My Returns', to: '#', active: active === 'returns' },
-        { label: 'My Cancellations', to: '#', active: active === 'cancellations' }
-      ]
-    },
-    {
-      title: 'My WishList',
-      links: []
     }
+    
   ];
 
   return (

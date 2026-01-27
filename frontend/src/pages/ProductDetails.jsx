@@ -39,7 +39,7 @@ const ProductDetails = () => {
       return;
     }
     
-    // Remove any spaces and validate
+
     const cleanPincode = pincode.trim().replace(/\s/g, '');
     
     if (cleanPincode.length !== 6) {
@@ -101,13 +101,13 @@ const ProductDetails = () => {
   const [userRating, setUserRating] = useState(0);
   const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
-  // Update quantity when product stock changes
+ 
   useEffect(() => {
     if (product && product.stock !== undefined) {
       if (product.stock === 0) {
         setQuantity(0);
       } else {
-        // If current quantity exceeds stock, adjust it
+        
         const currentQty = quantity;
         if (currentQty > product.stock) {
           setQuantity(product.stock);
@@ -116,7 +116,7 @@ const ProductDetails = () => {
         }
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [product]);
 
   useEffect(() => {

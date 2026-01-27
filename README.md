@@ -55,8 +55,8 @@ A full-stack e-commerce application built with the MERN stack (MongoDB, Express,
 
 ### 1. Clone the Repository
 ```bash
-git clone <https://github.com/SarthakSharma03/E-commerce-website>
-cd <https://github.com/SarthakSharma03/E-commerce-website>
+git clone https://github.com/SarthakSharma03/E-commerce-website
+cd https://github.com/SarthakSharma03/E-commerce-website
 ```
 
 ### 2. Backend Setup
@@ -74,8 +74,10 @@ npm run dev
 ```
 
 ### 3. Frontend Setup
+
 Navigate to the frontend directory and install dependencies:
 ```bash
+
 cd ../frontend
 npm install
 ```
@@ -86,6 +88,11 @@ npm run dev
 ```
 
 The application should now be running at `http://localhost:5173`.
+
+### 4 deployment link 
+
+-Frontend - `e-commerce-website-pck9m5wbi-sarthaks-projects-b937ee77.vercel.app`
+-Backend - `https://e-commerce-website-szxx.onrender.com`
 
 ## 📂 Project Structure
 
